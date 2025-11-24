@@ -1,12 +1,17 @@
 @import url(https://fonts.googleapis.com/css?family=Share+Tech);
+
 body {
   background-color: #021929;
+  margin: 0;
+  padding: 0;
 }
+
 h1 {
   font-family: "Share Tech";
   animation: pulse 0.9s infinite;
   color: #01ab2d;
 }
+
 #identity-results,
 #resume,
 #loading-alpha-div,
@@ -20,16 +25,19 @@ h1 {
   color: #01ab2d;
   animation: pulse 0.9s infinite;
 }
+
 i {
   font-size: 24px;
   color: #01ab2d;
   animation: pulse 0.9s infinite;
 }
+
 .block {
   width: 50px;
   height: 50px;
   background-color: #021929;
 }
+
 @keyframes pulse {
   0% {
     opacity: 1;
@@ -41,14 +49,17 @@ i {
     opacity: 1;
   }
 }
+
 .cursor:after {
   content: "_";
   opacity: 0;
   animation: cursor 1s infinite;
 }
+
 .sign:before {
   content: "> ";
 }
+
 @keyframes cursor {
   0% {
     opacity: 0;
@@ -66,22 +77,28 @@ i {
     opacity: 0;
   }
 }
+
 #loading-alpha-div,
 .img-div {
   display: none;
 }
+
 img {
   margin: 50px 0;
   animation: pulse 0.9s infinite;
 }
+
 #loadingMessage2 {
   display: none;
 }
+
 .sub-item {
   margin-top: 20px;
   margin-left: 40px;
 }
+
 .inline {
   display: inline;
   margin-left: 10px;
 }
+

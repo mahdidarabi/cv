@@ -1,0 +1,117 @@
+.container {
+  padding: 20px;
+}
+
+.loadingH1 {
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.imgContainer {
+  margin-top: 20px;
+}
+
+.identityResults {
+  margin-top: 20px;
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.greeting {
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.message {
+  margin-top: 20px;
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.loadingMessage2 {
+  margin-top: 20px;
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.resume {
+  margin-top: 20px;
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.name,
+.alias,
+.occupation,
+.devops,
+.devops1,
+.devops2,
+.devops3,
+.back,
+.back1,
+.back2,
+.back3,
+.back4 {
+  font-family: "Share Tech";
+  font-weight: 900;
+  font-size: 24px;
+  color: #01ab2d;
+  animation: pulse 0.9s infinite;
+}
+
+.cursor:after {
+  content: "_";
+  opacity: 0;
+  animation: cursor 1s infinite;
+}
+
+.sign:before {
+  content: "> ";
+}
+
+@keyframes cursor {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.subItem {
+  margin-top: 20px;
+  margin-left: 40px;
+}
+
+.inline {
+  display: inline;
+  margin-left: 10px;
+}
+
