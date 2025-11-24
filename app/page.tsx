@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import styles from './page.module.css'
 
 const DATA = {
@@ -43,6 +43,7 @@ export default function Home() {
   const [back3, setBack3] = useState('')
   const [back4, setBack4] = useState('')
   const [showCursor, setShowCursor] = useState<Record<string, boolean>>({})
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Initial loading dots animation
@@ -182,8 +183,25 @@ export default function Home() {
     }
   }, [loading, typeText])
 
+  // Auto-scroll to bottom when content changes
+  useEffect(() => {
+    const scrollToBottom = () => {
+      const terminalContent = document.querySelector('.terminal-content') as HTMLElement
+      if (terminalContent) {
+        terminalContent.scrollTo({
+          top: terminalContent.scrollHeight,
+          behavior: 'smooth'
+        })
+      }
+    }
+
+    // Scroll when any text state changes
+    const timeoutId = setTimeout(scrollToBottom, 50)
+    return () => clearTimeout(timeoutId)
+  }, [greeting, message, name, alias, occupation, devops, devops1, devops2, devops3, back, back1, back2, back3, back4, showLoadingMessage2, alphaLoading])
+
   return (
-    <div className={styles.container}>
+    <div ref={containerRef} className={styles.container}>
       {loading && (
         <h1 className={styles.loadingH1}>
           <span>

@@ -23,7 +23,23 @@ export default function RootLayout({
           referrerPolicy="no-referrer"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <div className="terminal-wrapper">
+          <div className="terminal-window">
+            <div className="terminal-header">
+              <div className="terminal-controls">
+                <span className="terminal-control close"></span>
+                <span className="terminal-control minimize"></span>
+                <span className="terminal-control maximize"></span>
+              </div>
+              <div className="terminal-title">TERMINAL</div>
+            </div>
+            <div className="terminal-content">
+              {children}
+            </div>
+          </div>
+        </div>
+      </body>
     </html>
   )
 }
