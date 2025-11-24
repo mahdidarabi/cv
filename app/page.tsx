@@ -197,7 +197,7 @@ export default function Home() {
           <h1 className={`${styles.greeting} ${showCursor.greeting ? styles.cursor : ''}`}>
             {greeting}
           </h1>
-          <p className={`${styles.message} ${showCursor.message ? styles.cursor : ''} ${styles.sign}`}>
+          <p className={`${styles.message} ${showCursor.message ? styles.cursor : ''} ${message ? styles.sign : ''}`}>
             {message}
           </p>
         </div>
@@ -208,44 +208,44 @@ export default function Home() {
         )}
       </div>
       <div id="resume" className={styles.resume}>
-        <h3 className={`${styles.name} ${showCursor.name ? styles.cursor : ''} ${styles.sign}`}>
+        <h3 className={`${styles.name} ${showCursor.name ? styles.cursor : ''} ${name ? styles.sign : ''}`}>
           {name}
         </h3>
-        <h3 className={`${styles.alias} ${showCursor.alias ? styles.cursor : ''} ${styles.sign}`}>
+        <h3 className={`${styles.alias} ${showCursor.alias ? styles.cursor : ''} ${alias ? styles.sign : ''}`}>
           {alias}
         </h3>
-        <h3 className={`${styles.occupation} ${showCursor.occupation ? styles.cursor : ''} ${styles.sign}`}>
+        <h3 className={`${styles.occupation} ${showCursor.occupation ? styles.cursor : ''} ${occupation ? styles.sign : ''}`}>
           {occupation}
         </h3>
         <br />
-        <i id="devops-span" className="fa fa-wrench"></i>
+        {devops && <i id="devops-span" className="fa fa-wrench"></i>}
         <h3 className={`${styles.devops} ${styles.inline} ${showCursor.devops ? styles.cursor : ''}`}>
           {devops}
         </h3>
-        <h4 className={`${styles.devops1} ${styles.subItem} ${showCursor.devops1 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.devops1} ${styles.subItem} ${showCursor.devops1 ? styles.cursor : ''}`}>
           {devops1}
         </h4>
-        <h4 className={`${styles.devops2} ${styles.subItem} ${showCursor.devops2 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.devops2} ${styles.subItem} ${showCursor.devops2 ? styles.cursor : ''}`}>
           {devops2}
         </h4>
-        <h4 className={`${styles.devops3} ${styles.subItem} ${showCursor.devops3 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.devops3} ${styles.subItem} ${showCursor.devops3 ? styles.cursor : ''}`}>
           {devops3}
         </h4>
         <br />
-        <i id="back-span" className="fa fa-wrench"></i>
+        {back && <i id="back-span" className="fa fa-wrench"></i>}
         <h3 className={`${styles.back} ${styles.inline} ${showCursor.back ? styles.cursor : ''}`}>
           {back}
         </h3>
-        <h4 className={`${styles.back1} ${styles.subItem} ${showCursor.back1 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.back1} ${styles.subItem} ${showCursor.back1 ? styles.cursor : ''}`}>
           {back1}
         </h4>
-        <h4 className={`${styles.back2} ${styles.subItem} ${showCursor.back2 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.back2} ${styles.subItem} ${showCursor.back2 ? styles.cursor : ''}`}>
           {back2}
         </h4>
-        <h4 className={`${styles.back3} ${styles.subItem} ${showCursor.back3 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.back3} ${styles.subItem} ${showCursor.back3 ? styles.cursor : ''}`}>
           {back3}
         </h4>
-        <h4 className={`${styles.back4} ${styles.subItem} ${showCursor.back4 ? styles.cursor : ''} ${styles.sign}`}>
+        <h4 className={`${styles.back4} ${styles.subItem} ${showCursor.back4 ? styles.cursor : ''}`}>
           {back4}
         </h4>
       </div>
