@@ -114,6 +114,21 @@ function SectionTitle({ children, id }: { children: ReactNode; id: string }) {
   )
 }
 
+function CompanyName({ name, url }: { name: string; url?: string }) {
+  if (!url) return name
+
+  return (
+    <a
+      className={styles.companyLink}
+      href={url}
+      rel="noreferrer"
+      target="_blank"
+    >
+      {name}
+    </a>
+  )
+}
+
 function ExperienceMeta({
   period,
   duration,
@@ -366,7 +381,12 @@ export default function TerminalResume() {
                 experience.type === 'company' ? (
                   <article className={styles.companyGroup} key={experience.company}>
                     <div className={styles.experienceHeader}>
-                      <h3>{experience.company}</h3>
+                      <h3>
+                        <CompanyName
+                          name={experience.company}
+                          url={experience.companyUrl}
+                        />
+                      </h3>
                       <p>{experience.total}</p>
                     </div>
                     <div className={styles.companyRoles}>
@@ -382,7 +402,16 @@ export default function TerminalResume() {
                 ) : (
                   <article className={styles.companyGroup} key={`${experience.company}-${experience.role}`}>
                     <div className={styles.experienceHeader}>
-                      <h3>{experience.company}</h3>
+                      <h3>
+                        <CompanyName
+                          name={experience.company}
+                          url={
+                            'companyUrl' in experience
+                              ? experience.companyUrl
+                              : undefined
+                          }
+                        />
+                      </h3>
                       {getRoleDuration(experience, currentDate) && (
                         <p>{getRoleDuration(experience, currentDate)}</p>
                       )}

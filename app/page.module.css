@@ -298,6 +298,17 @@
   margin: 0;
 }
 
+.companyLink {
+  color: inherit;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 0.2em;
+}
+
+.companyLink:hover,
+.companyLink:focus-visible {
+  color: var(--accent-bright);
+}
+
 .experienceHeader {
   align-items: baseline;
   display: flex;

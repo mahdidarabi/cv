@@ -152,6 +152,7 @@ export const workExperience = [
     type: 'role',
     role: 'DEVOPS ENGINEER',
     company: 'TALINE | طلاین',
+    companyUrl: 'https://taline.ir',
     period: 'MAR 2026 – PRESENT',
     startDate: '2026-03-01',
     employmentType: 'FULL-TIME',
@@ -164,6 +165,7 @@ export const workExperience = [
     type: 'role',
     role: 'SENIOR DEVOPS ENGINEER',
     company: 'TECHNOLIFE',
+    companyUrl: 'https://technolife.com',
     period: 'SEP 2025 – PRESENT',
     startDate: '2025-09-01',
     employmentType: 'FULL-TIME',
@@ -174,6 +176,7 @@ export const workExperience = [
   {
     type: 'company',
     company: 'WEBLITE',
+    companyUrl: 'https://weblite.me',
     total: '3 YRS 10 MOS',
     roles: [
       {
@@ -228,6 +231,7 @@ export const workExperience = [
     role: 'SOFTWARE ENGINEER',
     company: 'L.I.F.E.',
     period: 'JAN 2021 – JUN 2023',
+    duration: '2 YRS 6 MOS',
     employmentType: 'FREELANCE',
     responsibilities: [
       'Worked as a freelancer on software projects, contributing to software design, architecture, and backend system development as a team member.',
@@ -238,6 +242,8 @@ export const workExperience = [
     role: 'TECHNICAL SUPPORT',
     company: 'AVIZHEGROUP',
     period: 'APR 2019 – MAY 2020',
+    duration: '1 YR 2 MOS',
+    companyUrl: 'https://avizhegroup.com/',
     responsibilities: [
       'Resolved customer issues related to installation and training, including development and bug fixing of products when needed.',
     ],
