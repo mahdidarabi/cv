@@ -10,9 +10,7 @@
   padding-bottom: 1.75rem;
 }
 
-.heroLabel,
-.menuPrompt,
-.keyboardHint {
+.heroLabel {
   color: var(--muted);
   font-size: 0.7em;
   letter-spacing: 0.12em;
@@ -44,73 +42,50 @@
   color: var(--accent-bright);
 }
 
-.menu {
+.tabBar {
   border-bottom: 1px solid var(--border);
-  padding: 1.5rem 0;
+  overflow-x: auto;
+  padding: 1rem 0 0;
 }
 
-.menuPrompt {
-  margin-bottom: 0.75rem;
+.tabList {
+  display: flex;
+  gap: 0.2rem;
+  min-width: max-content;
 }
 
-.menuGrid {
-  display: grid;
-  gap: 0.65rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.menuButton,
+.tab,
 .closeButton {
-  background: rgba(212, 176, 106, 0.04);
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 0.35rem 0.35rem 0 0;
+  color: var(--muted);
   cursor: pointer;
   font: inherit;
   font-size: 0.78em;
-  min-height: 2.8rem;
+  min-height: 2.6rem;
   padding: 0.65rem 0.75rem;
-  text-align: left;
+  text-align: center;
   transition:
     background 150ms ease,
     border-color 150ms ease,
-    color 150ms ease,
-    transform 150ms ease;
+    color 150ms ease;
 }
 
-.menuButton:hover,
-.menuButton:focus-visible,
-.menuButton.selected,
+.tab:hover,
+.tab:focus-visible,
+.tab.selected,
 .closeButton:hover,
 .closeButton:focus-visible {
-  background: rgba(212, 176, 106, 0.14);
+  background: rgba(212, 176, 106, 0.08);
   border-color: var(--accent);
   color: var(--accent-bright);
   outline: none;
-  transform: translateY(-1px);
 }
 
-.menuButton.selected {
-  box-shadow: 0 0 0 1px var(--accent) inset;
-}
-
-.menuIndex {
-  color: var(--accent);
-  display: inline-block;
-  margin-right: 0.75rem;
-}
-
-.keyboardHint {
-  margin-top: 0.9rem;
-}
-
-.keyboardHint kbd {
-  border: 1px solid var(--border-strong);
-  border-radius: 0.2rem;
-  color: var(--accent-bright);
-  font: inherit;
-  font-size: 0.9em;
-  padding: 0.1rem 0.3rem;
+.tab.selected {
+  border-bottom: 2px solid var(--accent);
 }
 
 .selectedPanel {
@@ -524,16 +499,11 @@
 }
 
 @media (max-width: 600px) {
-  .menuGrid,
   .contactGrid,
   .projectList,
   .skillGroups,
   .softSkillList {
     grid-template-columns: 1fr;
-  }
-
-  .keyboardHint {
-    display: none;
   }
 
   .selectedHeader,

@@ -54,7 +54,7 @@ body::before {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 40px 20px;
+  padding: 24px 16px;
   position: relative;
   z-index: 1;
 }
@@ -62,9 +62,9 @@ body::before {
 /* Glassy Terminal Window */
 .terminal-window {
   width: 100%;
-  max-width: 1200px;
-  height: min(80vh, 800px);
-  max-height: 800px;
+  max-width: 1600px;
+  height: min(92vh, 1000px);
+  max-height: 1000px;
   min-height: 500px;
   background: var(--surface);
   backdrop-filter: blur(20px) saturate(180%);

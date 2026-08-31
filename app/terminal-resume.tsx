@@ -260,7 +260,7 @@ export default function TerminalResume() {
       const target = event.target
       if (
         target instanceof HTMLElement &&
-        target.closest('[data-resume-menu]')
+        target.closest('[data-resume-tabs]')
       ) {
         return
       }
@@ -299,6 +299,7 @@ export default function TerminalResume() {
       }
 
       event.preventDefault()
+      setSelectedView(navigationItems[nextIndex].id)
       buttonRefs.current[nextIndex]?.focus()
     }
 
@@ -306,7 +307,7 @@ export default function TerminalResume() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
   }, [])
 
-  const handleMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const currentIndex = buttonRefs.current.findIndex(
       (button) => button === document.activeElement,
     )
@@ -331,6 +332,7 @@ export default function TerminalResume() {
     }
 
     event.preventDefault()
+    setSelectedView(navigationItems[nextIndex].id)
     buttonRefs.current[nextIndex]?.focus()
   }
 
@@ -566,39 +568,41 @@ export default function TerminalResume() {
       </header>
 
       <nav
-        className={styles.menu}
+        className={styles.tabBar}
         aria-label="Resume sections"
-        data-resume-menu="true"
-        onKeyDown={handleMenuKeyDown}
+        data-resume-tabs="true"
       >
-        <p className={styles.menuPrompt}>SELECT MODULE:</p>
-        <div className={styles.menuGrid}>
+        <div
+          className={styles.tabList}
+          role="tablist"
+          aria-label="Resume sections"
+          onKeyDown={handleTabKeyDown}
+        >
           {navigationItems.map((item, index) => (
             <button
-              className={`${styles.menuButton} ${
+              className={`${styles.tab} ${
                 selectedView === item.id ? styles.selected : ''
               }`}
               type="button"
-              aria-pressed={selectedView === item.id}
+              role="tab"
               aria-controls="selected-content"
+              aria-selected={selectedView === item.id}
+              id={`tab-${item.id}`}
+              tabIndex={
+                selectedView === item.id || (selectedView === null && index === 0)
+                  ? 0
+                  : -1
+              }
               key={item.id}
               ref={(button) => {
                 buttonRefs.current[index] = button
               }}
               onClick={() => selectView(item.id, index)}
             >
-              <span className={styles.menuIndex}>
-                {String(index + 1).padStart(2, '0')}
-              </span>
               {item.label}
             </button>
           ))}
         </div>
-        <p className={styles.keyboardHint}>
-          <kbd>1–{navigationItems.length}</kbd> open · <kbd>↑</kbd> <kbd>↓</kbd>{' '}
-          navigate ·{' '}
-          <kbd>ENTER</kbd> select · <kbd>ESC</kbd> close
-        </p>
       </nav>
 
       <div
