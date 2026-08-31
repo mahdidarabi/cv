@@ -62,6 +62,10 @@ function isNavigationId(value: unknown): value is NavigationId {
   return navigationItems.some((item) => item.id === value)
 }
 
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value)
+}
+
 function getInitialIconPositions(): Record<NavigationId, IconPosition> {
   return navigationItems.reduce(
     (positions, item, index) => {
@@ -73,6 +77,27 @@ function getInitialIconPositions(): Record<NavigationId, IconPosition> {
     },
     {} as Record<NavigationId, IconPosition>,
   )
+}
+
+function getWindowBounds() {
+  const width = Math.min(720, window.innerWidth - 24)
+  const height = Math.min(680, window.innerHeight - 130)
+
+  return {
+    maxX: Math.max(12, window.innerWidth - width - 12),
+    maxY: Math.max(12, window.innerHeight - 40 - height - 62),
+  }
+}
+
+function getInitialWindowPosition(index: number) {
+  if (window.innerWidth <= 700) {
+    return { x: 12, y: 12 }
+  }
+
+  return {
+    x: 90 + index * 28,
+    y: 82 + index * 28,
+  }
 }
 
 function getFullVisibility() {
@@ -324,6 +349,7 @@ export default function TerminalResume() {
       }
 
       if (Array.isArray(parsedState.windows)) {
+        const bounds = getWindowBounds()
         const restoredWindows = parsedState.windows
           .filter(
             (windowState): windowState is Record<string, unknown> =>
@@ -332,17 +358,26 @@ export default function TerminalResume() {
           .filter((windowState) => isNavigationId(windowState.id))
           .map((windowState, index) => ({
             id: windowState.id as NavigationId,
-            x:
-              typeof windowState.x === 'number' && Number.isFinite(windowState.x)
-                ? windowState.x
-                : 90 + index * 28,
-            y:
-              typeof windowState.y === 'number' && Number.isFinite(windowState.y)
-                ? windowState.y
-                : 82 + index * 28,
+            x: Math.min(
+              bounds.maxX,
+              Math.max(
+                12,
+                isFiniteNumber(windowState.x)
+                  ? windowState.x
+                  : getInitialWindowPosition(index).x,
+              ),
+            ),
+            y: Math.min(
+              bounds.maxY,
+              Math.max(
+                12,
+                isFiniteNumber(windowState.y)
+                  ? windowState.y
+                  : getInitialWindowPosition(index).y,
+              ),
+            ),
             zIndex:
-              typeof windowState.zIndex === 'number' &&
-              Number.isFinite(windowState.zIndex)
+              isFiniteNumber(windowState.zIndex)
                 ? windowState.zIndex
                 : 10 + index,
             minimized: windowState.minimized === true,
@@ -363,10 +398,8 @@ export default function TerminalResume() {
             position !== null &&
             'x' in position &&
             'y' in position &&
-            typeof position.x === 'number' &&
-            Number.isFinite(position.x) &&
-            typeof position.y === 'number' &&
-            Number.isFinite(position.y)
+            isFiniteNumber(position.x) &&
+            isFiniteNumber(position.y)
           ) {
             restoredPositions[item.id] = {
               x: position.x,
@@ -418,14 +451,16 @@ export default function TerminalResume() {
     }
 
     const offset = windows.length * 28
+    const initialPosition = getInitialWindowPosition(windows.length)
+    const bounds = getWindowBounds()
     const nextZIndex = topZIndex + 1
     setTopZIndex(nextZIndex)
     setWindows((current) => [
       ...current,
       {
         id,
-        x: 90 + offset,
-        y: 82 + offset,
+        x: Math.min(bounds.maxX, initialPosition.x + (window.innerWidth <= 700 ? 0 : offset)),
+        y: Math.min(bounds.maxY, initialPosition.y + (window.innerWidth <= 700 ? 0 : offset)),
         zIndex: nextZIndex,
         minimized: false,
         maximized: false,
@@ -468,10 +503,12 @@ export default function TerminalResume() {
       return
     }
 
+    const layerRect =
+      event.currentTarget.parentElement?.parentElement?.getBoundingClientRect()
     dragRef.current = {
       id: windowState.id,
-      offsetX: event.clientX - windowState.x,
-      offsetY: event.clientY - windowState.y,
+      offsetX: event.clientX - (layerRect?.left ?? 0) - windowState.x,
+      offsetY: event.clientY - (layerRect?.top ?? 0) - windowState.y,
     }
     event.currentTarget.setPointerCapture(event.pointerId)
     bringToFront(windowState.id)
@@ -481,13 +518,33 @@ export default function TerminalResume() {
     if (!dragRef.current) return
 
     const { id, offsetX, offsetY } = dragRef.current
+    const windowElement = event.currentTarget.parentElement
+    const windowRect = windowElement?.getBoundingClientRect()
+    const layerRect = windowElement?.parentElement?.getBoundingClientRect()
+    const maxX = Math.max(12, window.innerWidth - (windowRect?.width ?? 720) - 12)
+    const maxY = Math.max(
+      12,
+      window.innerHeight - 40 - (windowRect?.height ?? 680) - 62,
+    )
     setWindows((current) =>
       current.map((windowState) =>
         windowState.id === id
           ? {
               ...windowState,
-              x: Math.max(12, event.clientX - offsetX),
-              y: Math.max(48, event.clientY - offsetY),
+              x: Math.min(
+                maxX,
+                Math.max(
+                  12,
+                  event.clientX - (layerRect?.left ?? 0) - offsetX,
+                ),
+              ),
+              y: Math.min(
+                maxY,
+                Math.max(
+                  12,
+                  event.clientY - (layerRect?.top ?? 40) - offsetY,
+                ),
+              ),
             }
           : windowState,
       ),
@@ -533,11 +590,24 @@ export default function TerminalResume() {
     if (!iconDrag.moved && distance < 4) return
 
     iconDrag.moved = true
+    const parentRect = event.currentTarget.parentElement?.getBoundingClientRect()
+    const iconRect = event.currentTarget.getBoundingClientRect()
+    const maxX = Math.max(8, (parentRect?.width ?? window.innerWidth) - iconRect.width)
+    const maxY = Math.max(
+      8,
+      (parentRect?.height ?? window.innerHeight) - iconRect.height,
+    )
     setIconPositions((current) => ({
       ...current,
       [iconDrag.id]: {
-        x: Math.max(8, event.clientX - iconDrag.parentLeft - iconDrag.offsetX),
-        y: Math.max(8, event.clientY - iconDrag.parentTop - iconDrag.offsetY),
+        x: Math.min(
+          maxX,
+          Math.max(8, event.clientX - iconDrag.parentLeft - iconDrag.offsetX),
+        ),
+        y: Math.min(
+          maxY,
+          Math.max(8, event.clientY - iconDrag.parentTop - iconDrag.offsetY),
+        ),
       },
     }))
   }
