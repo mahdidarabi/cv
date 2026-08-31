@@ -25,6 +25,7 @@ import {
 const START_DELAY = 350
 const TYPING_SPEED = 45
 const LINE_DELAY = 250
+const DESKTOP_STATE_KEY = 'mahdi-cv-desktop-state'
 
 type AnimationStatus = 'static' | 'typing' | 'complete'
 type NavigationId = (typeof navigationItems)[number]['id']
@@ -50,7 +51,29 @@ type WindowState = {
   maximized: boolean
 }
 
+type IconPosition = {
+  x: number
+  y: number
+}
+
 const appIcons = ['◉', '@', '▣', '⌘', '✦', '⚙', '◇', '▤']
+
+function isNavigationId(value: unknown): value is NavigationId {
+  return navigationItems.some((item) => item.id === value)
+}
+
+function getInitialIconPositions(): Record<NavigationId, IconPosition> {
+  return navigationItems.reduce(
+    (positions, item, index) => {
+      positions[item.id] = {
+        x: 20 + (index % 2) * 104,
+        y: 24 + Math.floor(index / 2) * 100,
+      }
+      return positions
+    },
+    {} as Record<NavigationId, IconPosition>,
+  )
+}
 
 function getFullVisibility() {
   return Object.fromEntries(
@@ -203,12 +226,27 @@ export default function TerminalResume() {
   const [currentDate, setCurrentDate] = useState<Date | null>(null)
   const [windows, setWindows] = useState<WindowState[]>([])
   const [topZIndex, setTopZIndex] = useState(10)
+  const [iconPositions, setIconPositions] = useState<
+    Record<NavigationId, IconPosition>
+  >(getInitialIconPositions)
+  const [hasRestoredState, setHasRestoredState] = useState(false)
   const timersRef = useRef<number[]>([])
   const dragRef = useRef<{
     id: NavigationId
     offsetX: number
     offsetY: number
   } | null>(null)
+  const iconDragRef = useRef<{
+    id: NavigationId
+    offsetX: number
+    offsetY: number
+    parentLeft: number
+    parentTop: number
+    startClientX: number
+    startClientY: number
+    moved: boolean
+  } | null>(null)
+  const suppressIconClickRef = useRef<NavigationId | null>(null)
 
   const stopAnimation = useCallback(() => {
     timersRef.current.forEach((timer) => window.clearTimeout(timer))
@@ -270,6 +308,96 @@ export default function TerminalResume() {
 
     return () => window.clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    try {
+      const savedState = window.localStorage.getItem(DESKTOP_STATE_KEY)
+      if (!savedState) {
+        setHasRestoredState(true)
+        return
+      }
+
+      const parsedState = JSON.parse(savedState) as {
+        windows?: unknown
+        iconPositions?: Record<string, unknown>
+        topZIndex?: unknown
+      }
+
+      if (Array.isArray(parsedState.windows)) {
+        const restoredWindows = parsedState.windows
+          .filter(
+            (windowState): windowState is Record<string, unknown> =>
+              typeof windowState === 'object' && windowState !== null,
+          )
+          .filter((windowState) => isNavigationId(windowState.id))
+          .map((windowState, index) => ({
+            id: windowState.id as NavigationId,
+            x:
+              typeof windowState.x === 'number' && Number.isFinite(windowState.x)
+                ? windowState.x
+                : 90 + index * 28,
+            y:
+              typeof windowState.y === 'number' && Number.isFinite(windowState.y)
+                ? windowState.y
+                : 82 + index * 28,
+            zIndex:
+              typeof windowState.zIndex === 'number' &&
+              Number.isFinite(windowState.zIndex)
+                ? windowState.zIndex
+                : 10 + index,
+            minimized: windowState.minimized === true,
+            maximized: windowState.maximized === true,
+          }))
+        setWindows(restoredWindows)
+      }
+
+      if (
+        parsedState.iconPositions &&
+        typeof parsedState.iconPositions === 'object'
+      ) {
+        const restoredPositions = getInitialIconPositions()
+        navigationItems.forEach((item) => {
+          const position = parsedState.iconPositions?.[item.id]
+          if (
+            typeof position === 'object' &&
+            position !== null &&
+            'x' in position &&
+            'y' in position &&
+            typeof position.x === 'number' &&
+            Number.isFinite(position.x) &&
+            typeof position.y === 'number' &&
+            Number.isFinite(position.y)
+          ) {
+            restoredPositions[item.id] = {
+              x: position.x,
+              y: position.y,
+            }
+          }
+        })
+        setIconPositions(restoredPositions)
+      }
+
+      if (
+        typeof parsedState.topZIndex === 'number' &&
+        Number.isFinite(parsedState.topZIndex)
+      ) {
+        setTopZIndex(parsedState.topZIndex)
+      }
+    } catch {
+      window.localStorage.removeItem(DESKTOP_STATE_KEY)
+    } finally {
+      setHasRestoredState(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!hasRestoredState) return
+
+    window.localStorage.setItem(
+      DESKTOP_STATE_KEY,
+      JSON.stringify({ windows, iconPositions, topZIndex }),
+    )
+  }, [hasRestoredState, iconPositions, topZIndex, windows])
 
   const bringToFront = (id: NavigationId) => {
     setTopZIndex((current) => current + 1)
@@ -370,6 +498,73 @@ export default function TerminalResume() {
     if (!dragRef.current) return
     dragRef.current = null
     event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  const startDraggingIcon = (
+    event: PointerEvent<HTMLButtonElement>,
+    id: NavigationId,
+  ) => {
+    const iconRect = event.currentTarget.getBoundingClientRect()
+    const parentRect = event.currentTarget.parentElement?.getBoundingClientRect()
+    if (!parentRect) return
+
+    suppressIconClickRef.current = null
+    iconDragRef.current = {
+      id,
+      offsetX: event.clientX - iconRect.left,
+      offsetY: event.clientY - iconRect.top,
+      parentLeft: parentRect.left,
+      parentTop: parentRect.top,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      moved: false,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const dragIcon = (event: PointerEvent<HTMLButtonElement>) => {
+    const iconDrag = iconDragRef.current
+    if (!iconDrag) return
+
+    const distance = Math.hypot(
+      event.clientX - iconDrag.startClientX,
+      event.clientY - iconDrag.startClientY,
+    )
+    if (!iconDrag.moved && distance < 4) return
+
+    iconDrag.moved = true
+    setIconPositions((current) => ({
+      ...current,
+      [iconDrag.id]: {
+        x: Math.max(8, event.clientX - iconDrag.parentLeft - iconDrag.offsetX),
+        y: Math.max(8, event.clientY - iconDrag.parentTop - iconDrag.offsetY),
+      },
+    }))
+  }
+
+  const stopDraggingIcon = (event: PointerEvent<HTMLButtonElement>) => {
+    const iconDrag = iconDragRef.current
+    if (!iconDrag) return
+
+    if (iconDrag.moved) {
+      suppressIconClickRef.current = iconDrag.id
+    }
+    iconDragRef.current = null
+    event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  const openFromIcon = (id: NavigationId) => {
+    if (suppressIconClickRef.current === id) {
+      suppressIconClickRef.current = null
+      return
+    }
+    openApplication(id)
+  }
+
+  const resetDesktop = () => {
+    setWindows([])
+    setIconPositions(getInitialIconPositions())
+    setTopZIndex(10)
   }
 
   const renderApplication = (id: NavigationId) => {
@@ -576,7 +771,21 @@ export default function TerminalResume() {
       <header className={styles.desktopBar}>
         <span>MD7 OS</span>
         <span>DEVOPS ENGINEER / SRE</span>
-        <span>{currentDate?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        <div className={styles.desktopBarActions}>
+          <span>
+            {currentDate?.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </span>
+          <button
+            className={styles.resetButton}
+            type="button"
+            onClick={resetDesktop}
+          >
+            RESET DESKTOP
+          </button>
+        </div>
       </header>
 
       <div className={styles.desktopIcons}>
@@ -585,7 +794,15 @@ export default function TerminalResume() {
             className={styles.desktopIcon}
             type="button"
             key={item.id}
-            onClick={() => openApplication(item.id)}
+            style={{
+              left: iconPositions[item.id].x,
+              top: iconPositions[item.id].y,
+            }}
+            onClick={() => openFromIcon(item.id)}
+            onPointerDown={(event) => startDraggingIcon(event, item.id)}
+            onPointerMove={dragIcon}
+            onPointerUp={stopDraggingIcon}
+            onPointerCancel={stopDraggingIcon}
           >
             <span className={styles.desktopIconGlyph}>{appIcons[index]}</span>
             <span>{item.label}</span>
