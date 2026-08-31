@@ -185,6 +185,7 @@
 }
 
 .experienceHeader h3,
+.experienceItem > h3,
 .skillGroup h3,
 .educationItem h3 {
   color: var(--text);

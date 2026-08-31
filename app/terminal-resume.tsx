@@ -355,41 +355,49 @@ export default function TerminalResume() {
                   </div>
                 </article>
               ) : (
-                <article
-                  className={styles.experienceItem}
-                  key={`${experience.company}-${experience.role}`}
-                >
+                <article className={styles.companyGroup} key={`${experience.company}-${experience.role}`}>
                   <div className={styles.experienceHeader}>
-                    <h3>{experience.role}</h3>
-                    <p>{experience.company}</p>
+                    <h3>{experience.company}</h3>
+                    {getExperienceDuration(experience, currentDate) && (
+                      <p>{getExperienceDuration(experience, currentDate)}</p>
+                    )}
                   </div>
-                  <ExperienceMeta
-                    period={experience.period}
-                    duration={getExperienceDuration(experience, currentDate)}
-                    employmentType={
-                      'employmentType' in experience
-                        ? experience.employmentType
-                        : undefined
-                    }
-                    location={
-                      'location' in experience ? experience.location : undefined
-                    }
-                    workMode={
-                      'workMode' in experience ? experience.workMode : undefined
-                    }
-                  />
-                  {'skills' in experience && (
-                    <p className={styles.experienceSkills}>
-                      {experience.skills.join(' · ')}
-                    </p>
-                  )}
-                  {experience.responsibilities.length > 0 && (
-                    <ul className={styles.responsibilityList}>
-                      {experience.responsibilities.map((responsibility) => (
-                        <li key={responsibility}>{responsibility}</li>
-                      ))}
-                    </ul>
-                  )}
+                  <div className={styles.companyRoles}>
+                    <article className={styles.experienceItem}>
+                      <h3>{experience.role}</h3>
+                      <ExperienceMeta
+                        period={experience.period}
+                        duration={getExperienceDuration(experience, currentDate)}
+                        employmentType={
+                          'employmentType' in experience
+                            ? experience.employmentType
+                            : undefined
+                        }
+                        location={
+                          'location' in experience
+                            ? experience.location
+                            : undefined
+                        }
+                        workMode={
+                          'workMode' in experience
+                            ? experience.workMode
+                            : undefined
+                        }
+                      />
+                      {'skills' in experience && (
+                        <p className={styles.experienceSkills}>
+                          {experience.skills.join(' · ')}
+                        </p>
+                      )}
+                      {experience.responsibilities.length > 0 && (
+                        <ul className={styles.responsibilityList}>
+                          {experience.responsibilities.map((responsibility) => (
+                            <li key={responsibility}>{responsibility}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </article>
+                  </div>
                 </article>
               ),
             )}
