@@ -20,12 +20,12 @@ function AnimatedText({
   id,
   text,
   visibleChars,
-  showCursor,
+  isActive,
 }: {
   id: string
   text: string
   visibleChars: Record<string, number>
-  showCursor: boolean
+  isActive: boolean
 }) {
   const visibleText = text.slice(0, visibleChars[id] ?? 0)
   const isIncomplete = visibleText.length < text.length
@@ -33,7 +33,7 @@ function AnimatedText({
   return (
     <>
       {visibleText}
-      {showCursor && isIncomplete && (
+      {isActive && isIncomplete && (
         <span className={styles.cursor} aria-hidden="true">
           _
         </span>
@@ -48,6 +48,7 @@ export default function TerminalResume() {
   )
   const [status, setStatus] = useState<AnimationStatus>('static')
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [activeLineId, setActiveLineId] = useState<string | null>(null)
   const timersRef = useRef<number[]>([])
 
   const stopAnimation = useCallback(() => {
@@ -58,6 +59,7 @@ export default function TerminalResume() {
   const skipAnimation = useCallback(() => {
     stopAnimation()
     setVisibleChars(getFullVisibility())
+    setActiveLineId(null)
     setStatus('complete')
   }, [stopAnimation])
 
@@ -68,6 +70,7 @@ export default function TerminalResume() {
 
     if (motionPreference.matches) {
       setReducedMotion(true)
+      setActiveLineId(null)
       setStatus('complete')
       return
     }
@@ -86,9 +89,12 @@ export default function TerminalResume() {
 
       const line = animationLines[lineIndex]
       if (!line) {
+        setActiveLineId(null)
         setStatus('complete')
         return
       }
+
+      setActiveLineId(line.id)
 
       if (characterIndex < line.text.length) {
         characterIndex += 1
@@ -107,6 +113,7 @@ export default function TerminalResume() {
 
     setStatus('loading')
     setVisibleChars({})
+    setActiveLineId(null)
     schedule(() => {
       setStatus('typing')
       revealNextCharacter()
@@ -160,7 +167,7 @@ export default function TerminalResume() {
             id="greeting"
             text={profile.greeting}
             visibleChars={visibleChars}
-            showCursor={isTyping}
+            isActive={isTyping && activeLineId === 'greeting'}
           />
         </p>
         <p className={styles.message}>
@@ -168,7 +175,7 @@ export default function TerminalResume() {
             id="message"
             text={profile.message}
             visibleChars={visibleChars}
-            showCursor={isTyping}
+            isActive={isTyping && activeLineId === 'message'}
           />
         </p>
 
@@ -178,7 +185,7 @@ export default function TerminalResume() {
               id="name"
               text={profile.name}
               visibleChars={visibleChars}
-              showCursor={isTyping}
+              isActive={isTyping && activeLineId === 'name'}
             />
           </h1>
           <p className={styles.identityLine}>
@@ -186,7 +193,7 @@ export default function TerminalResume() {
               id="alias"
               text={profile.alias}
               visibleChars={visibleChars}
-              showCursor={isTyping}
+              isActive={isTyping && activeLineId === 'alias'}
             />
           </p>
           <p className={styles.identityLine}>
@@ -194,7 +201,7 @@ export default function TerminalResume() {
               id="occupation"
               text={profile.occupation}
               visibleChars={visibleChars}
-              showCursor={isTyping}
+              isActive={isTyping && activeLineId === 'occupation'}
             />
           </p>
         </div>
@@ -214,7 +221,9 @@ export default function TerminalResume() {
                   id={`${section.id}-heading`}
                   text={section.label}
                   visibleChars={visibleChars}
-                  showCursor={isTyping}
+                  isActive={
+                    isTyping && activeLineId === `${section.id}-heading`
+                  }
                 />
               </h2>
               <ul className={styles.skillList}>
@@ -224,7 +233,10 @@ export default function TerminalResume() {
                       id={`${section.id}-item-${index}`}
                       text={item}
                       visibleChars={visibleChars}
-                      showCursor={isTyping}
+                      isActive={
+                        isTyping &&
+                        activeLineId === `${section.id}-item-${index}`
+                      }
                     />
                   </li>
                 ))}
