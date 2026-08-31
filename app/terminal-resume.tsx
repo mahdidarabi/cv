@@ -61,6 +61,28 @@ function SectionTitle({ children, id }: { children: React.ReactNode; id: string 
   )
 }
 
+function ExperienceMeta({
+  period,
+  duration,
+  employmentType,
+  location,
+  workMode,
+}: {
+  period: string
+  duration?: string
+  employmentType?: string
+  location?: string
+  workMode?: string
+}) {
+  return (
+    <p className={styles.experienceMeta}>
+      {[employmentType, period, duration, location, workMode]
+        .filter(Boolean)
+        .join(' · ')}
+    </p>
+  )
+}
+
 export default function TerminalResume() {
   const [visibleChars, setVisibleChars] = useState<Record<string, number>>(
     getFullVisibility,
@@ -257,22 +279,79 @@ export default function TerminalResume() {
         >
           <SectionTitle id="experience-heading">WORK EXPERIENCE</SectionTitle>
           <div className={styles.experienceList}>
-            {workExperience.map((job) => (
-              <article className={styles.experienceItem} key={`${job.company}-${job.role}`}>
-                <div className={styles.experienceHeader}>
-                  <h3>{job.role}</h3>
-                  <p>{job.period}</p>
-                </div>
-                <p className={styles.company}>{job.company}</p>
-                {job.responsibilities.length > 0 && (
-                  <ul className={styles.responsibilityList}>
-                    {job.responsibilities.map((responsibility) => (
-                      <li key={responsibility}>{responsibility}</li>
+            {workExperience.map((experience) =>
+              experience.type === 'company' ? (
+                <article className={styles.companyGroup} key={experience.company}>
+                  <div className={styles.experienceHeader}>
+                    <h3>{experience.company}</h3>
+                    <p>{experience.total}</p>
+                  </div>
+                  <div className={styles.companyRoles}>
+                    {experience.roles.map((job) => (
+                      <article
+                        className={styles.experienceItem}
+                        key={`${experience.company}-${job.role}-${job.period}`}
+                      >
+                        <h3>{job.role}</h3>
+                        <ExperienceMeta
+                          period={job.period}
+                          duration={'duration' in job ? job.duration : undefined}
+                          employmentType={job.employmentType}
+                          location={'location' in job ? job.location : undefined}
+                          workMode={'workMode' in job ? job.workMode : undefined}
+                        />
+                        {job.responsibilities.length > 0 && (
+                          <ul className={styles.responsibilityList}>
+                            {job.responsibilities.map((responsibility) => (
+                              <li key={responsibility}>{responsibility}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </article>
                     ))}
-                  </ul>
-                )}
-              </article>
-            ))}
+                  </div>
+                </article>
+              ) : (
+                <article
+                  className={styles.experienceItem}
+                  key={`${experience.company}-${experience.role}`}
+                >
+                  <div className={styles.experienceHeader}>
+                    <h3>{experience.role}</h3>
+                    <p>{experience.company}</p>
+                  </div>
+                  <ExperienceMeta
+                    period={experience.period}
+                    duration={
+                      'duration' in experience ? experience.duration : undefined
+                    }
+                    employmentType={
+                      'employmentType' in experience
+                        ? experience.employmentType
+                        : undefined
+                    }
+                    location={
+                      'location' in experience ? experience.location : undefined
+                    }
+                    workMode={
+                      'workMode' in experience ? experience.workMode : undefined
+                    }
+                  />
+                  {'skills' in experience && (
+                    <p className={styles.experienceSkills}>
+                      {experience.skills.join(' · ')}
+                    </p>
+                  )}
+                  {experience.responsibilities.length > 0 && (
+                    <ul className={styles.responsibilityList}>
+                      {experience.responsibilities.map((responsibility) => (
+                        <li key={responsibility}>{responsibility}</li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              ),
+            )}
           </div>
         </section>
 

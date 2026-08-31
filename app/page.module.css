@@ -160,6 +160,18 @@
   gap: 1.5rem;
 }
 
+.companyGroup {
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  padding: 1rem;
+}
+
+.companyRoles {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
 .experienceItem {
   border-left: 1px solid var(--border-strong);
   padding-left: 1rem;
@@ -182,6 +194,7 @@
 }
 
 .experienceHeader p,
+.experienceMeta,
 .company,
 .educationItem p,
 .educationItem span {
@@ -193,6 +206,12 @@
 .company {
   color: var(--accent);
   letter-spacing: 0.1em;
+}
+
+.experienceSkills {
+  color: var(--accent);
+  font-size: 0.78em;
+  margin: 0.75rem 0 0;
 }
 
 .responsibilityList {
