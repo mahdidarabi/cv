@@ -1,133 +1,150 @@
 .resume {
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: clamp(1rem, 1.6vw, 1.35rem);
-  line-height: 1.65;
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+  line-height: 1.6;
 }
 
-.toolbar {
-  align-items: center;
+.hero {
   border-bottom: 1px solid var(--border);
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  padding-bottom: 0.75rem;
+  padding-bottom: 1.75rem;
 }
 
-.toolbarLabel {
+.heroLabel,
+.menuPrompt,
+.keyboardHint {
   color: var(--muted);
-  font-size: 0.75em;
+  font-size: 0.7em;
   letter-spacing: 0.12em;
+  margin: 0;
 }
 
-.skipButton {
-  background: transparent;
-  border: 1px solid var(--border-strong);
+.heroLabel {
+  margin-bottom: 1rem;
+}
+
+.name {
+  color: var(--text);
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.occupation {
+  color: var(--accent-bright);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  margin: 0.75rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.cursor {
+  animation: cursor 850ms steps(1, end) infinite;
+  color: var(--accent-bright);
+}
+
+.menu {
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.menuPrompt {
+  margin-bottom: 0.75rem;
+}
+
+.menuGrid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.menuButton,
+.closeButton {
+  background: rgba(255, 157, 26, 0.04);
+  border: 1px solid var(--border);
   border-radius: 0.25rem;
-  color: var(--muted);
+  color: var(--text);
   cursor: pointer;
   font: inherit;
-  font-size: 0.7em;
-  padding: 0.35rem 0.6rem;
-  transition: border-color 150ms ease, color 150ms ease;
+  font-size: 0.78em;
+  min-height: 2.8rem;
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
 }
 
-.skipButton:hover:not(:disabled),
-.skipButton:focus-visible {
+.menuButton:hover,
+.menuButton:focus-visible,
+.menuButton.selected,
+.closeButton:hover,
+.closeButton:focus-visible {
+  background: rgba(255, 157, 26, 0.14);
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-bright);
   outline: none;
+  transform: translateY(-1px);
 }
 
-.skipButton:disabled {
-  cursor: default;
-  opacity: 0.55;
+.menuButton.selected {
+  box-shadow: 0 0 0 1px var(--accent) inset;
 }
 
-.loadingMessage,
-.greeting,
-.message {
+.menuIndex {
+  color: var(--accent);
+  display: inline-block;
+  margin-right: 0.75rem;
+}
+
+.keyboardHint {
+  margin-top: 0.9rem;
+}
+
+.keyboardHint kbd {
+  border: 1px solid var(--border-strong);
+  border-radius: 0.2rem;
+  color: var(--accent-bright);
+  font: inherit;
+  font-size: 0.9em;
+  padding: 0.1rem 0.3rem;
+}
+
+.selectedPanel {
+  min-height: 12rem;
+  padding-top: 1.5rem;
+}
+
+.selectedHeader {
+  align-items: center;
+  color: var(--accent);
+  display: flex;
+  font-size: 0.75em;
+  justify-content: space-between;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.closeButton {
+  color: var(--muted);
+  font-size: 0.85em;
+  min-height: auto;
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+}
+
+.emptyState {
+  animation: pulse 1.2s ease-in-out infinite;
   color: var(--muted);
   font-size: 0.85em;
   margin: 0;
 }
 
-.loadingMessage {
-  animation: pulse 1.2s ease-in-out infinite;
-  margin-bottom: 1.5rem;
-}
-
-.greeting {
-  color: var(--accent-bright);
-  font-weight: 700;
-}
-
-.message {
-  margin-top: 0.25rem;
-}
-
-.identity {
-  border-left: 2px solid var(--accent);
-  margin: 2rem 0;
-  padding-left: 1rem;
-}
-
-.name {
-  color: var(--text);
-  font-size: 1.25em;
-  line-height: 1.35;
-  margin: 0;
-}
-
-.identityLine {
-  color: var(--muted);
-  font-size: 0.9em;
-  margin: 0.25rem 0 0;
-  overflow-wrap: anywhere;
-}
-
-.output {
-  overflow-wrap: anywhere;
-}
-
-.resumeSection {
-  animation: sectionReveal 600ms ease both;
-  border-top: 1px solid var(--border);
-  margin: 2rem 0 0;
-  padding-top: 1.5rem;
-}
-
-.resumeSection:nth-of-type(1) {
-  animation-delay: 100ms;
-}
-
-.resumeSection:nth-of-type(2) {
-  animation-delay: 180ms;
-}
-
-.resumeSection:nth-of-type(3) {
-  animation-delay: 260ms;
-}
-
-.resumeSection:nth-of-type(4) {
-  animation-delay: 340ms;
-}
-
-.resumeSection:nth-of-type(5) {
-  animation-delay: 420ms;
-}
-
-.resumeSection:nth-of-type(6) {
-  animation-delay: 500ms;
-}
-
-.summary {
-  animation: contentReveal 500ms ease both;
-}
-
-.summary + .summary {
-  animation-delay: 120ms;
+.viewSection {
+  animation: sectionReveal 450ms ease both;
 }
 
 .sectionTitle {
@@ -137,7 +154,7 @@
   font-size: 1em;
   gap: 0.6rem;
   letter-spacing: 0.08em;
-  margin: 0 0 0.5rem;
+  margin: 0 0 1rem;
 }
 
 .sectionMarker {
@@ -147,7 +164,7 @@
 
 .summary {
   color: var(--text);
-  font-size: 0.9em;
+  font-size: 0.88em;
   line-height: 1.75;
   margin: 0.75rem 0 0;
   max-width: 78ch;
@@ -190,10 +207,11 @@
 
 .experienceList {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .companyGroup {
+  animation: contentReveal 500ms ease both;
   border: 1px solid var(--border);
   border-radius: 0.35rem;
   padding: 1rem;
@@ -206,17 +224,18 @@
 }
 
 .experienceItem {
-  animation: contentReveal 500ms ease both;
   border-left: 1px solid var(--border-strong);
   padding-left: 1rem;
 }
 
-.experienceItem:nth-child(2) {
-  animation-delay: 100ms;
-}
-
-.experienceItem:nth-child(3) {
-  animation-delay: 200ms;
+.experienceItem > h3,
+.experienceHeader h3,
+.skillGroup h3,
+.educationItem h3 {
+  color: var(--text);
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
+  margin: 0;
 }
 
 .experienceHeader {
@@ -226,19 +245,8 @@
   justify-content: space-between;
 }
 
-.experienceHeader h3,
-.experienceItem > h3,
-.skillGroup h3,
-.educationItem h3 {
-  color: var(--text);
-  font-size: 0.9em;
-  letter-spacing: 0.04em;
-  margin: 0;
-}
-
 .experienceHeader p,
 .experienceMeta,
-.company,
 .educationItem p,
 .educationItem span {
   color: var(--muted);
@@ -246,9 +254,8 @@
   margin: 0.25rem 0 0;
 }
 
-.company {
-  color: var(--accent);
-  letter-spacing: 0.1em;
+.experienceMeta {
+  overflow-wrap: anywhere;
 }
 
 .experienceSkills {
@@ -282,42 +289,6 @@
   border: 1px solid var(--border);
   border-radius: 0.35rem;
   padding: 0.9rem 1rem;
-}
-
-.skillGroup:nth-child(2) {
-  animation-delay: 80ms;
-}
-
-.skillGroup:nth-child(3) {
-  animation-delay: 160ms;
-}
-
-.skillGroup:nth-child(4) {
-  animation-delay: 240ms;
-}
-
-.skillGroup:nth-child(5) {
-  animation-delay: 320ms;
-}
-
-.skillGroup:nth-child(6) {
-  animation-delay: 400ms;
-}
-
-.skillGroup:nth-child(7) {
-  animation-delay: 480ms;
-}
-
-.skillGroup:nth-child(8) {
-  animation-delay: 560ms;
-}
-
-.skillGroup:nth-child(9) {
-  animation-delay: 640ms;
-}
-
-.skillGroup:nth-child(10) {
-  animation-delay: 720ms;
 }
 
 .skillGroup h3 {
@@ -357,13 +328,35 @@
 }
 
 .educationItem {
-  animation: contentReveal 500ms ease both;
   border-left: 1px solid var(--border-strong);
   padding-left: 1rem;
 }
 
 .educationItem span {
   display: block;
+}
+
+@keyframes cursor {
+  0%,
+  45% {
+    opacity: 0;
+  }
+
+  46%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
 
 @keyframes sectionReveal {
@@ -390,76 +383,28 @@
   }
 }
 
-.cursor {
-  animation: cursor 850ms steps(1, end) infinite;
-  color: var(--accent-bright);
-}
-
-.screenReaderStatus {
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  position: absolute;
-  width: 1px;
-  clip: rect(0, 0, 0, 0);
-}
-
-@keyframes cursor {
-  0%,
-  45% {
-    opacity: 0;
-  }
-
-  46%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.6;
-  }
-}
-
 @media (max-width: 600px) {
-  .toolbar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .identity {
-    margin: 1.5rem 0;
-  }
-
+  .menuGrid,
   .contactGrid,
   .skillGroups,
   .softSkillList {
     grid-template-columns: 1fr;
   }
 
+  .selectedHeader,
   .experienceHeader {
     align-items: flex-start;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cursor,
-  .loadingMessage,
-  .resumeSection,
-  .summary,
-  .experienceItem,
-  .skillGroup,
-  .educationItem {
+  .emptyState,
+  .viewSection,
+  .companyGroup,
+  .skillGroup {
     animation: none;
   }
 }
-

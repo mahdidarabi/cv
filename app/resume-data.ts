@@ -1,14 +1,23 @@
 export const profile = {
   greeting: 'UNIDENTIFIED ORGANIC LIFEFORM DETECTED',
   message: 'RUNNING RESUME...',
-  name: 'NAME: MAHDI DARABI',
+  name: 'MAHDI DARABI',
   alias: 'KNOWN ALIAS: @mahdidarabi',
-  occupation: 'OCCUPATION: DEVOPS ENGINEER / SRE',
+  occupation: 'DEVOPS ENGINEER / SRE',
   summary:
     'DevOps Engineer with 3+ years of experience in designing and implementing scalable infrastructure and CI/CD pipelines.',
   background:
     'Transitioned from backend development (4+ years) to DevOps, driven by a passion for solving challenges across the development-to-deployment lifecycle. Spearheaded the creation of a DevOps practice from scratch at Weblite.me, single-handedly building the platform, infrastructure, and automation workflows to meet organizational needs. Strong advocate for IaC, observability, and collaboration between development and operations teams.',
 } as const
+
+export const navigationItems = [
+  { id: 'about', label: 'ABOUT' },
+  { id: 'contact', label: 'CONTACT & DETAILS' },
+  { id: 'experience', label: 'WORK EXPERIENCE' },
+  { id: 'hard-skills', label: 'HARD SKILLS' },
+  { id: 'soft-skills', label: 'SOFT SKILLS' },
+  { id: 'education', label: 'EDUCATION' },
+] as const
 
 export const contactDetails = [
   {
@@ -217,9 +226,6 @@ export const education = {
 } as const
 
 export const animationLines = [
-  { id: 'greeting', text: profile.greeting },
-  { id: 'message', text: profile.message },
   { id: 'name', text: profile.name },
-  { id: 'alias', text: profile.alias },
   { id: 'occupation', text: profile.occupation },
 ] as const

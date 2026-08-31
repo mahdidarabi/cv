@@ -1,22 +1,43 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import styles from './page.module.css'
 import {
   animationLines,
   contactDetails,
   education,
   hardSkillGroups,
+  navigationItems,
   profile,
   softSkills,
   workExperience,
 } from './resume-data'
 
 const START_DELAY = 350
-const TYPING_SPEED = 28
-const LINE_DELAY = 220
+const TYPING_SPEED = 45
+const LINE_DELAY = 250
 
-type AnimationStatus = 'static' | 'loading' | 'typing' | 'complete'
+type AnimationStatus = 'static' | 'typing' | 'complete'
+type NavigationId = (typeof navigationItems)[number]['id']
+
+type ExperienceRole = {
+  role: string
+  period: string
+  duration?: string
+  startDate?: string
+  employmentType?: string
+  location?: string
+  workMode?: string
+  skills?: readonly string[]
+  responsibilities: readonly string[]
+}
 
 function getFullVisibility() {
   return Object.fromEntries(
@@ -45,17 +66,14 @@ function formatDuration(startDate: string, currentDate: Date) {
   return parts.join(' ')
 }
 
-function getExperienceDuration(
-  experience: (typeof workExperience)[number],
+function getRoleDuration(
+  role: ExperienceRole,
   currentDate: Date | null,
 ) {
-  if ('startDate' in experience && currentDate) {
-    return formatDuration(experience.startDate, currentDate)
+  if (role.startDate && currentDate) {
+    return formatDuration(role.startDate, currentDate)
   }
-  if ('duration' in experience && typeof experience.duration === 'string') {
-    return experience.duration
-  }
-  return undefined
+  return role.duration
 }
 
 function AnimatedText({
@@ -84,7 +102,7 @@ function AnimatedText({
   )
 }
 
-function SectionTitle({ children, id }: { children: React.ReactNode; id: string }) {
+function SectionTitle({ children, id }: { children: ReactNode; id: string }) {
   return (
     <h2 id={id} className={styles.sectionTitle}>
       <span className={styles.sectionMarker} aria-hidden="true">
@@ -117,36 +135,54 @@ function ExperienceMeta({
   )
 }
 
+function ExperienceRole({
+  role,
+  currentDate,
+}: {
+  role: ExperienceRole
+  currentDate: Date | null
+}) {
+  return (
+    <article className={styles.experienceItem}>
+      <h3>{role.role}</h3>
+      <ExperienceMeta
+        period={role.period}
+        duration={getRoleDuration(role, currentDate)}
+        employmentType={role.employmentType}
+        location={role.location}
+        workMode={role.workMode}
+      />
+      {role.skills && (
+        <p className={styles.experienceSkills}>{role.skills.join(' · ')}</p>
+      )}
+      {role.responsibilities.length > 0 && (
+        <ul className={styles.responsibilityList}>
+          {role.responsibilities.map((responsibility) => (
+            <li key={responsibility}>{responsibility}</li>
+          ))}
+        </ul>
+      )}
+    </article>
+  )
+}
+
 export default function TerminalResume() {
   const [visibleChars, setVisibleChars] = useState<Record<string, number>>(
     getFullVisibility,
   )
   const [status, setStatus] = useState<AnimationStatus>('static')
   const [activeLineId, setActiveLineId] = useState<string | null>(null)
+  const [selectedView, setSelectedView] = useState<NavigationId | null>(null)
   const [currentDate, setCurrentDate] = useState<Date | null>(null)
   const timersRef = useRef<number[]>([])
-  const skipRequestedRef = useRef(false)
+  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([])
 
   const stopAnimation = useCallback(() => {
     timersRef.current.forEach((timer) => window.clearTimeout(timer))
     timersRef.current = []
   }, [])
 
-  const skipAnimation = useCallback(() => {
-    skipRequestedRef.current = true
-    stopAnimation()
-    setVisibleChars(getFullVisibility())
-    setActiveLineId(null)
-    setStatus('complete')
-  }, [stopAnimation])
-
   useEffect(() => {
-    if (skipRequestedRef.current) {
-      setActiveLineId(null)
-      setStatus('complete')
-      return
-    }
-
     let lineIndex = 0
     let characterIndex = 0
     let cancelled = false
@@ -183,13 +219,10 @@ export default function TerminalResume() {
       schedule(revealNextCharacter, LINE_DELAY)
     }
 
-    setStatus('loading')
+    setStatus('typing')
     setVisibleChars({})
     setActiveLineId(null)
-    schedule(() => {
-      setStatus('typing')
-      revealNextCharacter()
-    }, START_DELAY)
+    schedule(revealNextCharacter, START_DELAY)
 
     return () => {
       cancelled = true
@@ -205,231 +238,299 @@ export default function TerminalResume() {
     return () => window.clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: globalThis.KeyboardEvent) => {
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        target.closest('[data-resume-menu]')
+      ) {
+        return
+      }
+
+      const currentIndex = buttonRefs.current.findIndex(
+        (button) => button === document.activeElement,
+      )
+      const focusedIndex = currentIndex >= 0 ? currentIndex : 0
+
+      if (/^[1-6]$/.test(event.key)) {
+        const selectedIndex = Number(event.key) - 1
+        setSelectedView(navigationItems[selectedIndex].id)
+        buttonRefs.current[selectedIndex]?.focus()
+        return
+      }
+
+      if (event.key === 'Escape') {
+        setSelectedView(null)
+        buttonRefs.current[focusedIndex]?.focus()
+        return
+      }
+
+      let nextIndex = focusedIndex
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        nextIndex = (focusedIndex + 1) % navigationItems.length
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        nextIndex =
+          (focusedIndex - 1 + navigationItems.length) % navigationItems.length
+      } else if (event.key === 'Home') {
+        nextIndex = 0
+      } else if (event.key === 'End') {
+        nextIndex = navigationItems.length - 1
+      } else {
+        return
+      }
+
+      event.preventDefault()
+      buttonRefs.current[nextIndex]?.focus()
+    }
+
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
+
+  const handleMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = buttonRefs.current.findIndex(
+      (button) => button === document.activeElement,
+    )
+    const focusedIndex = currentIndex >= 0 ? currentIndex : 0
+    let nextIndex = focusedIndex
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      nextIndex = (focusedIndex + 1) % navigationItems.length
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      nextIndex =
+        (focusedIndex - 1 + navigationItems.length) % navigationItems.length
+    } else if (event.key === 'Home') {
+      nextIndex = 0
+    } else if (event.key === 'End') {
+      nextIndex = navigationItems.length - 1
+    } else if (event.key === 'Escape') {
+      setSelectedView(null)
+      buttonRefs.current[focusedIndex]?.focus()
+      return
+    } else {
+      return
+    }
+
+    event.preventDefault()
+    buttonRefs.current[nextIndex]?.focus()
+  }
+
+  const selectView = (id: NavigationId, index: number) => {
+    setSelectedView(id)
+    buttonRefs.current[index]?.focus()
+  }
+
+  const selectedLabel = navigationItems.find(
+    (item) => item.id === selectedView,
+  )?.label
+
+  const renderSelectedView = () => {
+    switch (selectedView) {
+      case 'about':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">ABOUT</SectionTitle>
+            <p className={styles.summary}>{profile.summary}</p>
+            <p className={styles.summary}>{profile.background}</p>
+          </section>
+        )
+      case 'contact':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">CONTACT &amp; DETAILS</SectionTitle>
+            <dl className={styles.contactGrid}>
+              {contactDetails.map((detail) => (
+                <div className={styles.contactItem} key={detail.label}>
+                  <dt>{detail.label}</dt>
+                  <dd>
+                    {'href' in detail ? (
+                      <a href={detail.href}>{detail.value}</a>
+                    ) : (
+                      detail.value
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )
+      case 'experience':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">WORK EXPERIENCE</SectionTitle>
+            <div className={styles.experienceList}>
+              {workExperience.map((experience) =>
+                experience.type === 'company' ? (
+                  <article className={styles.companyGroup} key={experience.company}>
+                    <div className={styles.experienceHeader}>
+                      <h3>{experience.company}</h3>
+                      <p>{experience.total}</p>
+                    </div>
+                    <div className={styles.companyRoles}>
+                      {experience.roles.map((role) => (
+                        <ExperienceRole
+                          key={`${experience.company}-${role.role}-${role.period}`}
+                          role={role}
+                          currentDate={currentDate}
+                        />
+                      ))}
+                    </div>
+                  </article>
+                ) : (
+                  <article className={styles.companyGroup} key={`${experience.company}-${experience.role}`}>
+                    <div className={styles.experienceHeader}>
+                      <h3>{experience.company}</h3>
+                      {getRoleDuration(experience, currentDate) && (
+                        <p>{getRoleDuration(experience, currentDate)}</p>
+                      )}
+                    </div>
+                    <div className={styles.companyRoles}>
+                      <ExperienceRole
+                        role={experience}
+                        currentDate={currentDate}
+                      />
+                    </div>
+                  </article>
+                ),
+              )}
+            </div>
+          </section>
+        )
+      case 'hard-skills':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">HARD SKILLS</SectionTitle>
+            <div className={styles.skillGroups}>
+              {hardSkillGroups.map((group) => (
+                <div className={styles.skillGroup} key={group.id}>
+                  <h3>{group.label}</h3>
+                  <ul className={styles.skillList}>
+                    {group.items.map((skill) => (
+                      <li className={styles.skillItem} key={skill}>
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      case 'soft-skills':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">SOFT SKILLS</SectionTitle>
+            <ul className={styles.softSkillList}>
+              {softSkills.map((skill) => (
+                <li className={styles.skillItem} key={skill}>
+                  {skill}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      case 'education':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">EDUCATION</SectionTitle>
+            <div className={styles.educationItem}>
+              <h3>{education.degree}</h3>
+              <p>{education.institution}</p>
+              <span>{education.period}</span>
+            </div>
+          </section>
+        )
+      default:
+        return null
+    }
+  }
+
   const isTyping = status === 'typing'
 
   return (
     <article className={styles.resume} aria-label="Mahdi Darabi CV">
-      <div className={styles.toolbar}>
-        <span className={styles.toolbarLabel}>SESSION: MD7</span>
-        <button
-          className={styles.skipButton}
-          type="button"
-          onClick={skipAnimation}
-          disabled={status === 'complete'}
-        >
-          {status === 'complete' ? 'ANIMATION COMPLETE' : 'SKIP ANIMATION'}
-        </button>
-      </div>
-
-      {status === 'loading' && (
-        <p className={styles.loadingMessage} role="status">
-          RUNNING IDENTITY PROTOCOL<span aria-hidden="true">...</span>
-        </p>
-      )}
-
-      <div className={styles.output}>
-        <p className={styles.greeting}>
+      <header className={styles.hero}>
+        <p className={styles.heroLabel}>IDENTITY PROTOCOL // MD7</p>
+        <h1 className={styles.name}>
           <AnimatedText
-            id="greeting"
-            text={profile.greeting}
+            id="name"
+            text={profile.name}
             visibleChars={visibleChars}
-            isActive={isTyping && activeLineId === 'greeting'}
+            isActive={isTyping && activeLineId === 'name'}
+          />
+        </h1>
+        <p className={styles.occupation}>
+          <AnimatedText
+            id="occupation"
+            text={profile.occupation}
+            visibleChars={visibleChars}
+            isActive={isTyping && activeLineId === 'occupation'}
           />
         </p>
-        <p className={styles.message}>
-          <AnimatedText
-            id="message"
-            text={profile.message}
-            visibleChars={visibleChars}
-            isActive={isTyping && activeLineId === 'message'}
-          />
-        </p>
+      </header>
 
-        <div className={styles.identity}>
-          <h1 className={styles.name}>
-            <AnimatedText
-              id="name"
-              text={profile.name}
-              visibleChars={visibleChars}
-              isActive={isTyping && activeLineId === 'name'}
-            />
-          </h1>
-          <p className={styles.identityLine}>
-            <AnimatedText
-              id="alias"
-              text={profile.alias}
-              visibleChars={visibleChars}
-              isActive={isTyping && activeLineId === 'alias'}
-            />
-          </p>
-          <p className={styles.identityLine}>
-            <AnimatedText
-              id="occupation"
-              text={profile.occupation}
-              visibleChars={visibleChars}
-              isActive={isTyping && activeLineId === 'occupation'}
-            />
-          </p>
+      <nav
+        className={styles.menu}
+        aria-label="Resume sections"
+        data-resume-menu="true"
+        onKeyDown={handleMenuKeyDown}
+      >
+        <p className={styles.menuPrompt}>SELECT MODULE:</p>
+        <div className={styles.menuGrid}>
+          {navigationItems.map((item, index) => (
+            <button
+              className={`${styles.menuButton} ${
+                selectedView === item.id ? styles.selected : ''
+              }`}
+              type="button"
+              aria-pressed={selectedView === item.id}
+              aria-controls="selected-content"
+              key={item.id}
+              ref={(button) => {
+                buttonRefs.current[index] = button
+              }}
+              onClick={() => selectView(item.id, index)}
+            >
+              <span className={styles.menuIndex}>
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              {item.label}
+            </button>
+          ))}
         </div>
+        <p className={styles.keyboardHint}>
+          <kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>ENTER</kbd> select ·{' '}
+          <kbd>ESC</kbd> close
+        </p>
+      </nav>
 
-        <section className={styles.resumeSection} aria-labelledby="about-heading">
-          <SectionTitle id="about-heading">ABOUT</SectionTitle>
-          <p className={styles.summary}>{profile.summary}</p>
-          <p className={styles.summary}>{profile.background}</p>
-        </section>
-
-        <section className={styles.resumeSection} aria-labelledby="contact-heading">
-          <SectionTitle id="contact-heading">CONTACT &amp; DETAILS</SectionTitle>
-          <dl className={styles.contactGrid}>
-            {contactDetails.map((detail) => (
-              <div className={styles.contactItem} key={detail.label}>
-                <dt>{detail.label}</dt>
-                <dd>
-                  {'href' in detail ? (
-                    <a href={detail.href}>{detail.value}</a>
-                  ) : (
-                    detail.value
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        <section
-          className={styles.resumeSection}
-          aria-labelledby="experience-heading"
-        >
-          <SectionTitle id="experience-heading">WORK EXPERIENCE</SectionTitle>
-          <div className={styles.experienceList}>
-            {workExperience.map((experience) =>
-              experience.type === 'company' ? (
-                <article className={styles.companyGroup} key={experience.company}>
-                  <div className={styles.experienceHeader}>
-                    <h3>{experience.company}</h3>
-                    <p>{experience.total}</p>
-                  </div>
-                  <div className={styles.companyRoles}>
-                    {experience.roles.map((job) => (
-                      <article
-                        className={styles.experienceItem}
-                        key={`${experience.company}-${job.role}-${job.period}`}
-                      >
-                        <h3>{job.role}</h3>
-                        <ExperienceMeta
-                          period={job.period}
-                          duration={'duration' in job ? job.duration : undefined}
-                          employmentType={job.employmentType}
-                          location={'location' in job ? job.location : undefined}
-                          workMode={'workMode' in job ? job.workMode : undefined}
-                        />
-                        {job.responsibilities.length > 0 && (
-                          <ul className={styles.responsibilityList}>
-                            {job.responsibilities.map((responsibility) => (
-                              <li key={responsibility}>{responsibility}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                </article>
-              ) : (
-                <article className={styles.companyGroup} key={`${experience.company}-${experience.role}`}>
-                  <div className={styles.experienceHeader}>
-                    <h3>{experience.company}</h3>
-                    {getExperienceDuration(experience, currentDate) && (
-                      <p>{getExperienceDuration(experience, currentDate)}</p>
-                    )}
-                  </div>
-                  <div className={styles.companyRoles}>
-                    <article className={styles.experienceItem}>
-                      <h3>{experience.role}</h3>
-                      <ExperienceMeta
-                        period={experience.period}
-                        duration={getExperienceDuration(experience, currentDate)}
-                        employmentType={
-                          'employmentType' in experience
-                            ? experience.employmentType
-                            : undefined
-                        }
-                        location={
-                          'location' in experience
-                            ? experience.location
-                            : undefined
-                        }
-                        workMode={
-                          'workMode' in experience
-                            ? experience.workMode
-                            : undefined
-                        }
-                      />
-                      {'skills' in experience && (
-                        <p className={styles.experienceSkills}>
-                          {experience.skills.join(' · ')}
-                        </p>
-                      )}
-                      {experience.responsibilities.length > 0 && (
-                        <ul className={styles.responsibilityList}>
-                          {experience.responsibilities.map((responsibility) => (
-                            <li key={responsibility}>{responsibility}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </article>
-                  </div>
-                </article>
-              ),
-            )}
-          </div>
-        </section>
-
-        <section className={styles.resumeSection} aria-labelledby="skills-heading">
-          <SectionTitle id="skills-heading">HARD SKILLS</SectionTitle>
-          <div className={styles.skillGroups}>
-            {hardSkillGroups.map((group) => (
-              <div className={styles.skillGroup} key={group.id}>
-                <h3>{group.label}</h3>
-                <ul className={styles.skillList}>
-                  {group.items.map((skill) => (
-                    <li className={styles.skillItem} key={skill}>
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.resumeSection} aria-labelledby="soft-skills-heading">
-          <SectionTitle id="soft-skills-heading">SOFT SKILLS</SectionTitle>
-          <ul className={styles.softSkillList}>
-            {softSkills.map((skill) => (
-              <li className={styles.skillItem} key={skill}>
-                {skill}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className={styles.resumeSection} aria-labelledby="education-heading">
-          <SectionTitle id="education-heading">EDUCATION</SectionTitle>
-          <div className={styles.educationItem}>
-            <h3>{education.degree}</h3>
-            <p>{education.institution}</p>
-            <span>{education.period}</span>
-          </div>
-        </section>
+      <div
+        id="selected-content"
+        className={styles.selectedPanel}
+        aria-live="polite"
+        aria-label={selectedLabel ? `Selected ${selectedLabel}` : undefined}
+      >
+        {selectedView ? (
+          <>
+            <div className={styles.selectedHeader}>
+              <span>SELECTED: {selectedLabel}</span>
+              <button
+                className={styles.closeButton}
+                type="button"
+                onClick={() => setSelectedView(null)}
+              >
+                ESC / BACK
+              </button>
+            </div>
+            {renderSelectedView()}
+          </>
+        ) : (
+          <p className={styles.emptyState}>
+            SELECT A MODULE TO LOAD RESUME DATA<span className={styles.cursor}>_</span>
+          </p>
+        )}
       </div>
-
-      <p className={styles.screenReaderStatus} aria-live="polite">
-        {status === 'complete'
-          ? 'Resume loaded.'
-          : status === 'loading'
-            ? 'Loading resume.'
-            : ''}
-      </p>
     </article>
   )
 }
