@@ -452,6 +452,10 @@
     grid-template-columns: 1fr;
   }
 
+  .keyboardHint {
+    display: none;
+  }
+
   .selectedHeader,
   .experienceHeader {
     align-items: flex-start;
