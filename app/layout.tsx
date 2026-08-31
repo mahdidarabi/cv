@@ -54,24 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <a className="skip-link" href="#main-content">
-          Skip to content
-        </a>
-        <div className="terminal-wrapper">
-          <div className="terminal-window">
-            <header className="terminal-header">
-              <div className="terminal-controls" aria-hidden="true">
-                <span className="terminal-control close"></span>
-                <span className="terminal-control minimize"></span>
-                <span className="terminal-control maximize"></span>
-              </div>
-              <div className="terminal-title">TERMINAL // MD7</div>
-            </header>
-            <div className="terminal-content">{children}</div>
-          </div>
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

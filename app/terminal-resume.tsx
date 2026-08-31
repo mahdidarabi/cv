@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  type KeyboardEvent,
+  type PointerEvent,
   type ReactNode,
   useCallback,
   useEffect,
@@ -40,6 +40,17 @@ type ExperienceRole = {
   skills?: readonly string[]
   responsibilities: readonly string[]
 }
+
+type WindowState = {
+  id: NavigationId
+  x: number
+  y: number
+  zIndex: number
+  minimized: boolean
+  maximized: boolean
+}
+
+const appIcons = ['◉', '@', '▣', '⌘', '✦', '⚙', '◇', '▤']
 
 function getFullVisibility() {
   return Object.fromEntries(
@@ -189,10 +200,15 @@ export default function TerminalResume() {
   )
   const [status, setStatus] = useState<AnimationStatus>('static')
   const [activeLineId, setActiveLineId] = useState<string | null>(null)
-  const [selectedView, setSelectedView] = useState<NavigationId | null>(null)
   const [currentDate, setCurrentDate] = useState<Date | null>(null)
+  const [windows, setWindows] = useState<WindowState[]>([])
+  const [topZIndex, setTopZIndex] = useState(10)
   const timersRef = useRef<number[]>([])
-  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([])
+  const dragRef = useRef<{
+    id: NavigationId
+    offsetX: number
+    offsetY: number
+  } | null>(null)
 
   const stopAnimation = useCallback(() => {
     timersRef.current.forEach((timer) => window.clearTimeout(timer))
@@ -255,110 +271,121 @@ export default function TerminalResume() {
     return () => window.clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    const handleGlobalKeyDown = (event: globalThis.KeyboardEvent) => {
-      const target = event.target
-      if (
-        target instanceof HTMLElement &&
-        target.closest('[data-resume-tabs]')
-      ) {
-        return
-      }
-
-      const currentIndex = buttonRefs.current.findIndex(
-        (button) => button === document.activeElement,
-      )
-      const focusedIndex = currentIndex >= 0 ? currentIndex : 0
-
-      if (/^\d$/.test(event.key)) {
-        const selectedIndex = Number(event.key) - 1
-        if (selectedIndex < 0 || selectedIndex >= navigationItems.length) return
-        setSelectedView(navigationItems[selectedIndex].id)
-        buttonRefs.current[selectedIndex]?.focus()
-        return
-      }
-
-      if (event.key === 'Escape') {
-        setSelectedView(null)
-        buttonRefs.current[focusedIndex]?.focus()
-        return
-      }
-
-      let nextIndex = focusedIndex
-      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-        nextIndex = (focusedIndex + 1) % navigationItems.length
-      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-        nextIndex =
-          (focusedIndex - 1 + navigationItems.length) % navigationItems.length
-      } else if (event.key === 'Home') {
-        nextIndex = 0
-      } else if (event.key === 'End') {
-        nextIndex = navigationItems.length - 1
-      } else {
-        return
-      }
-
-      event.preventDefault()
-      setSelectedView(navigationItems[nextIndex].id)
-      buttonRefs.current[nextIndex]?.focus()
-    }
-
-    window.addEventListener('keydown', handleGlobalKeyDown)
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [])
-
-  const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const currentIndex = buttonRefs.current.findIndex(
-      (button) => button === document.activeElement,
+  const bringToFront = (id: NavigationId) => {
+    setTopZIndex((current) => current + 1)
+    setWindows((current) =>
+      current.map((windowState) =>
+        windowState.id === id
+          ? { ...windowState, zIndex: topZIndex + 1, minimized: false }
+          : windowState,
+      ),
     )
-    const focusedIndex = currentIndex >= 0 ? currentIndex : 0
-    let nextIndex = focusedIndex
+  }
 
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-      nextIndex = (focusedIndex + 1) % navigationItems.length
-    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-      nextIndex =
-        (focusedIndex - 1 + navigationItems.length) % navigationItems.length
-    } else if (event.key === 'Home') {
-      nextIndex = 0
-    } else if (event.key === 'End') {
-      nextIndex = navigationItems.length - 1
-    } else if (event.key === 'Escape') {
-      setSelectedView(null)
-      buttonRefs.current[focusedIndex]?.focus()
-      return
-    } else {
+  const openApplication = (id: NavigationId) => {
+    const existingWindow = windows.find((windowState) => windowState.id === id)
+    if (existingWindow) {
+      bringToFront(id)
       return
     }
 
-    event.preventDefault()
-    setSelectedView(navigationItems[nextIndex].id)
-    buttonRefs.current[nextIndex]?.focus()
+    const offset = windows.length * 28
+    const nextZIndex = topZIndex + 1
+    setTopZIndex(nextZIndex)
+    setWindows((current) => [
+      ...current,
+      {
+        id,
+        x: 90 + offset,
+        y: 82 + offset,
+        zIndex: nextZIndex,
+        minimized: false,
+        maximized: false,
+      },
+    ])
   }
 
-  const selectView = (id: NavigationId, index: number) => {
-    setSelectedView(id)
-    buttonRefs.current[index]?.focus()
+  const closeApplication = (id: NavigationId) => {
+    setWindows((current) =>
+      current.filter((windowState) => windowState.id !== id),
+    )
   }
 
-  const selectedLabel = navigationItems.find(
-    (item) => item.id === selectedView,
-  )?.label
+  const minimizeApplication = (id: NavigationId) => {
+    setWindows((current) =>
+      current.map((windowState) =>
+        windowState.id === id
+          ? { ...windowState, minimized: true }
+          : windowState,
+      ),
+    )
+  }
 
-  const renderSelectedView = () => {
-    switch (selectedView) {
+  const toggleMaximize = (id: NavigationId) => {
+    bringToFront(id)
+    setWindows((current) =>
+      current.map((windowState) =>
+        windowState.id === id
+          ? { ...windowState, maximized: !windowState.maximized }
+          : windowState,
+      ),
+    )
+  }
+
+  const startDragging = (
+    event: PointerEvent<HTMLDivElement>,
+    windowState: WindowState,
+  ) => {
+    if (windowState.maximized || (event.target as HTMLElement).closest('button')) {
+      return
+    }
+
+    dragRef.current = {
+      id: windowState.id,
+      offsetX: event.clientX - windowState.x,
+      offsetY: event.clientY - windowState.y,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+    bringToFront(windowState.id)
+  }
+
+  const dragWindow = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current) return
+
+    const { id, offsetX, offsetY } = dragRef.current
+    setWindows((current) =>
+      current.map((windowState) =>
+        windowState.id === id
+          ? {
+              ...windowState,
+              x: Math.max(12, event.clientX - offsetX),
+              y: Math.max(48, event.clientY - offsetY),
+            }
+          : windowState,
+      ),
+    )
+  }
+
+  const stopDragging = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current) return
+    dragRef.current = null
+    event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  const renderApplication = (id: NavigationId) => {
+    switch (id) {
       case 'about':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">ABOUT</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>ABOUT</SectionTitle>
             <p className={styles.summary}>{profile.summary}</p>
             <p className={styles.summary}>{profile.background}</p>
-          </section>
+          </>
         )
       case 'contact':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">CONTACT &amp; DETAILS</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>CONTACT &amp; DETAILS</SectionTitle>
             <dl className={styles.contactGrid}>
               {contactDetails.map((detail) => (
                 <div className={styles.contactItem} key={detail.label}>
@@ -373,12 +400,12 @@ export default function TerminalResume() {
                 </div>
               ))}
             </dl>
-          </section>
+          </>
         )
       case 'experience':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">WORK EXPERIENCE</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>WORK EXPERIENCE</SectionTitle>
             <div className={styles.experienceList}>
               {workExperience.map((experience) =>
                 experience.type === 'company' ? (
@@ -403,7 +430,10 @@ export default function TerminalResume() {
                     </div>
                   </article>
                 ) : (
-                  <article className={styles.companyGroup} key={`${experience.company}-${experience.role}`}>
+                  <article
+                    className={styles.companyGroup}
+                    key={`${experience.company}-${experience.role}`}
+                  >
                     <div className={styles.experienceHeader}>
                       <h3>
                         <CompanyName
@@ -429,12 +459,12 @@ export default function TerminalResume() {
                 ),
               )}
             </div>
-          </section>
+          </>
         )
       case 'projects':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">PROJECTS</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>PROJECTS</SectionTitle>
             <div className={styles.projectList}>
               {projects.map((project) => (
                 <a
@@ -453,12 +483,12 @@ export default function TerminalResume() {
                 </a>
               ))}
             </div>
-          </section>
+          </>
         )
       case 'recommendations':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">RECOMMENDATIONS</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>RECOMMENDATIONS</SectionTitle>
             <div className={styles.recommendationList}>
               {recommendations.map((recommendation) => (
                 <article
@@ -492,12 +522,12 @@ export default function TerminalResume() {
                 </article>
               ))}
             </div>
-          </section>
+          </>
         )
       case 'hard-skills':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">HARD SKILLS</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>HARD SKILLS</SectionTitle>
             <div className={styles.skillGroups}>
               {hardSkillGroups.map((group) => (
                 <div className={styles.skillGroup} key={group.id}>
@@ -512,12 +542,12 @@ export default function TerminalResume() {
                 </div>
               ))}
             </div>
-          </section>
+          </>
         )
       case 'soft-skills':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">SOFT SKILLS</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>SOFT SKILLS</SectionTitle>
             <ul className={styles.softSkillList}>
               {softSkills.map((skill) => (
                 <li className={styles.skillItem} key={skill}>
@@ -525,112 +555,141 @@ export default function TerminalResume() {
                 </li>
               ))}
             </ul>
-          </section>
+          </>
         )
       case 'education':
         return (
-          <section className={styles.viewSection} aria-labelledby="view-heading">
-            <SectionTitle id="view-heading">EDUCATION</SectionTitle>
+          <>
+            <SectionTitle id={`${id}-heading`}>EDUCATION</SectionTitle>
             <div className={styles.educationItem}>
               <h3>{education.degree}</h3>
               <p>{education.institution}</p>
               <span>{education.period}</span>
             </div>
-          </section>
+          </>
         )
-      default:
-        return null
     }
   }
 
-  const isTyping = status === 'typing'
-
   return (
-    <article className={styles.resume} aria-label="Mahdi Darabi CV">
-      <header className={styles.hero}>
-        <p className={styles.heroLabel}>IDENTITY PROTOCOL // MD7</p>
-        <h1 className={styles.name}>
+    <div className={styles.desktop}>
+      <header className={styles.desktopBar}>
+        <span>MD7 OS</span>
+        <span>DEVOPS ENGINEER / SRE</span>
+        <span>{currentDate?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      </header>
+
+      <div className={styles.desktopIcons}>
+        {navigationItems.map((item, index) => (
+          <button
+            className={styles.desktopIcon}
+            type="button"
+            key={item.id}
+            onClick={() => openApplication(item.id)}
+          >
+            <span className={styles.desktopIconGlyph}>{appIcons[index]}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <section className={styles.desktopIdentity} aria-label="Identity">
+        <p className={styles.heroLabel}>WELCOME TO MY WORKSPACE</p>
+        <h1 className={styles.desktopName}>
           <AnimatedText
             id="name"
             text={profile.name}
             visibleChars={visibleChars}
-            isActive={isTyping && activeLineId === 'name'}
+            isActive={status === 'typing' && activeLineId === 'name'}
           />
         </h1>
-        <p className={styles.occupation}>
+        <p className={styles.desktopOccupation}>
           <AnimatedText
             id="occupation"
             text={profile.occupation}
             visibleChars={visibleChars}
-            isActive={isTyping && activeLineId === 'occupation'}
+            isActive={status === 'typing' && activeLineId === 'occupation'}
           />
         </p>
-      </header>
+      </section>
 
-      <nav
-        className={styles.tabBar}
-        aria-label="Resume sections"
-        data-resume-tabs="true"
-      >
-        <div
-          className={styles.tabList}
-          role="tablist"
-          aria-label="Resume sections"
-          onKeyDown={handleTabKeyDown}
-        >
-          {navigationItems.map((item, index) => (
+      <div className={styles.windowLayer}>
+        {windows.map((windowState) => {
+          const label = navigationItems.find((item) => item.id === windowState.id)?.label
+
+          return (
+            <section
+              className={`${styles.appWindow} ${
+                windowState.maximized ? styles.maximized : ''
+              } ${windowState.minimized ? styles.minimized : ''}`}
+              key={windowState.id}
+              style={{
+                left: windowState.x,
+                top: windowState.y,
+                zIndex: windowState.zIndex,
+              }}
+              aria-label={`${label} terminal`}
+            >
+              <div
+                className={styles.windowTitleBar}
+                onPointerDown={(event) => startDragging(event, windowState)}
+                onPointerMove={dragWindow}
+                onPointerUp={stopDragging}
+              >
+                <span className={styles.windowTitle}>
+                  <span className={styles.windowPrompt}>$</span>
+                  TERMINAL — {label}
+                </span>
+                <div className={styles.windowControls}>
+                  <button
+                    type="button"
+                    aria-label={`Minimize ${label}`}
+                    onClick={() => minimizeApplication(windowState.id)}
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`${windowState.maximized ? 'Restore' : 'Maximize'} ${label}`}
+                    onClick={() => toggleMaximize(windowState.id)}
+                  >
+                    {windowState.maximized ? '◇' : '□'}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Close ${label}`}
+                    onClick={() => closeApplication(windowState.id)}
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+              <div className={styles.windowContent}>{renderApplication(windowState.id)}</div>
+            </section>
+          )
+        })}
+      </div>
+
+      <footer className={styles.dock} aria-label="Application dock">
+        <span className={styles.dockBrand}>⌘</span>
+        {windows.map((windowState) => {
+          const label = navigationItems.find((item) => item.id === windowState.id)?.label
+
+          return (
             <button
-              className={`${styles.tab} ${
-                selectedView === item.id ? styles.selected : ''
+              className={`${styles.dockApp} ${
+                !windowState.minimized ? styles.dockAppActive : ''
               }`}
               type="button"
-              role="tab"
-              aria-controls="selected-content"
-              aria-selected={selectedView === item.id}
-              id={`tab-${item.id}`}
-              tabIndex={
-                selectedView === item.id || (selectedView === null && index === 0)
-                  ? 0
-                  : -1
-              }
-              key={item.id}
-              ref={(button) => {
-                buttonRefs.current[index] = button
-              }}
-              onClick={() => selectView(item.id, index)}
+              key={windowState.id}
+              onClick={() => openApplication(windowState.id)}
+              aria-label={`Open ${label}`}
             >
-              {item.label}
+              {label}
             </button>
-          ))}
-        </div>
-      </nav>
-
-      <div
-        id="selected-content"
-        className={styles.selectedPanel}
-        aria-live="polite"
-        aria-label={selectedLabel ? `Selected ${selectedLabel}` : undefined}
-      >
-        {selectedView ? (
-          <>
-            <div className={styles.selectedHeader}>
-              <span>SELECTED: {selectedLabel}</span>
-              <button
-                className={styles.closeButton}
-                type="button"
-                onClick={() => setSelectedView(null)}
-              >
-                ESC / BACK
-              </button>
-            </div>
-            {renderSelectedView()}
-          </>
-        ) : (
-          <p className={styles.emptyState}>
-            SELECT A MODULE TO LOAD RESUME DATA<span className={styles.cursor}>_</span>
-          </p>
-        )}
-      </div>
-    </article>
+          )
+        })}
+      </footer>
+    </div>
   )
 }
