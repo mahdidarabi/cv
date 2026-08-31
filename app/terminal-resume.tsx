@@ -304,7 +304,7 @@ export default function TerminalResume() {
   useEffect(() => {
     const updateCurrentDate = () => setCurrentDate(new Date())
     updateCurrentDate()
-    const interval = window.setInterval(updateCurrentDate, 60 * 60 * 1000)
+    const interval = window.setInterval(updateCurrentDate, 1000)
 
     return () => window.clearInterval(interval)
   }, [])
@@ -775,7 +775,9 @@ export default function TerminalResume() {
           <span>
             {currentDate?.toLocaleTimeString([], {
               hour: '2-digit',
+              hour12: false,
               minute: '2-digit',
+              second: '2-digit',
             })}
           </span>
           <button
