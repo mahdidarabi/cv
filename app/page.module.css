@@ -230,6 +230,64 @@
   overflow-wrap: anywhere;
 }
 
+.recommendationList {
+  display: grid;
+  gap: 1rem;
+}
+
+.recommendationCard {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: 0.35rem;
+  padding: 1rem 1.15rem;
+}
+
+.recommendationHeader {
+  align-items: baseline;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.recommendationHeader h3 {
+  color: var(--accent-bright);
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.recommendationHeader p,
+.recommendationHeader time {
+  color: var(--muted);
+  font-size: 0.72em;
+  margin: 0.25rem 0 0;
+}
+
+.recommendationHeader time {
+  flex-shrink: 0;
+}
+
+.recommendationContext {
+  color: var(--accent);
+  font-size: 0.65em;
+  letter-spacing: 0.06em;
+  margin: 0.75rem 0 0;
+}
+
+.recommendationQuote {
+  color: var(--text);
+  font-size: 0.8em;
+  line-height: 1.7;
+  margin-top: 0.75rem;
+}
+
+.recommendationQuote p {
+  margin: 0 0 0.75rem;
+}
+
+.recommendationQuote p:last-child {
+  margin-bottom: 0;
+}
+
 .contactGrid {
   display: grid;
   gap: 0.75rem 2rem;
@@ -468,7 +526,8 @@
   }
 
   .selectedHeader,
-  .experienceHeader {
+  .experienceHeader,
+  .recommendationHeader {
     align-items: flex-start;
     flex-direction: column;
     gap: 0.5rem;

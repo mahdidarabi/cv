@@ -17,6 +17,7 @@ import {
   navigationItems,
   profile,
   projects,
+  recommendations,
   softSkills,
   workExperience,
 } from './resume-data'
@@ -452,6 +453,36 @@ export default function TerminalResume() {
             </div>
           </section>
         )
+      case 'recommendations':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">RECOMMENDATIONS</SectionTitle>
+            <div className={styles.recommendationList}>
+              {recommendations.map((recommendation) => (
+                <article
+                  className={styles.recommendationCard}
+                  key={`${recommendation.author}-${recommendation.date}`}
+                >
+                  <header className={styles.recommendationHeader}>
+                    <div>
+                      <h3>{recommendation.author}</h3>
+                      <p>{recommendation.role}</p>
+                    </div>
+                    <time>{recommendation.date}</time>
+                  </header>
+                  <p className={styles.recommendationContext}>
+                    {recommendation.context}
+                  </p>
+                  <div className={styles.recommendationQuote}>
+                    {recommendation.quote.map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )
       case 'hard-skills':
         return (
           <section className={styles.viewSection} aria-labelledby="view-heading">
@@ -555,7 +586,8 @@ export default function TerminalResume() {
           ))}
         </div>
         <p className={styles.keyboardHint}>
-          <kbd>1–7</kbd> open · <kbd>↑</kbd> <kbd>↓</kbd> navigate ·{' '}
+          <kbd>1–{navigationItems.length}</kbd> open · <kbd>↑</kbd> <kbd>↓</kbd>{' '}
+          navigate ·{' '}
           <kbd>ENTER</kbd> select · <kbd>ESC</kbd> close
         </p>
       </nav>

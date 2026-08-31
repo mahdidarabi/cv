@@ -15,6 +15,7 @@ export const navigationItems = [
   { id: 'contact', label: 'CONTACT & DETAILS' },
   { id: 'experience', label: 'WORK EXPERIENCE' },
   { id: 'projects', label: 'PROJECTS' },
+  { id: 'recommendations', label: 'RECOMMENDATIONS' },
   { id: 'hard-skills', label: 'HARD SKILLS' },
   { id: 'soft-skills', label: 'SOFT SKILLS' },
   { id: 'education', label: 'EDUCATION' },
@@ -41,6 +42,58 @@ export const projects = [
     name: 'GitLeap',
     description: 'GitHub repository.',
     url: 'https://github.com/mahdidarabi/gitleap',
+  },
+] as const
+
+export const recommendations = [
+  {
+    author: 'Hasan Ahmadkhani',
+    role: 'Solution Architect & Data Engineer',
+    date: 'FEB 9, 2026',
+    context: 'WORKED WITH MAHDI ON THE SAME TEAM',
+    quote: [
+      'Mahdi is a strong DevOps Engineer with deep expertise in CI/CD pipelines, automation, and containerized environments. He brings a solid development background, which allows him to design efficient, developer-friendly workflows.',
+      'Passionate about infrastructure as code and observability, he consistently delivers scalable, reliable solutions across the development-to-deployment lifecycle.',
+    ],
+  },
+  {
+    author: 'Ali Khodaverd',
+    role: 'DevOps Engineer',
+    date: 'JUL 15, 2025',
+    context: 'WORKED WITH MAHDI ON THE SAME TEAM',
+    quote: [
+      "I had the opportunity to work with Mahdi, and I highly recommend him. If you're looking for someone who is exceptionally diligent, skilled, and proactive, Mahdi is the perfect choice.",
+      'His dedication and expertise make him a valuable asset to any team—don’t miss the chance to work with him!',
+    ],
+  },
+  {
+    author: 'Parsa Yahooie',
+    role: 'Game Enthusiast',
+    date: 'JUL 10, 2025',
+    context: 'WORKED WITH MAHDI ON DIFFERENT TEAMS',
+    quote: [
+      'Working with Mahdi has been a genuinely rewarding experience. He’s a standout DevOps expert with an exceptional blend of technical depth and an insatiable thirst for learning. His commitment to staying updated with the latest advancements makes him a valuable asset to any team.',
+      'What makes Mahdi truly special is his personality—he’s cheerful, witty, and consistently lifts the energy of those around him. His professionalism is unwavering, and he approaches every task with precision, accountability, and care. You can always count on him to deliver.',
+    ],
+  },
+  {
+    author: 'milad golgolgla',
+    role: 'Node.js Developer',
+    date: 'JUL 9, 2025',
+    context: 'WORKED WITH MAHDI ON THE SAME TEAM',
+    quote: [
+      "I had the pleasure of working with Mahdi and can confidently say he's one of the most driven and curious people I've worked with. He has a natural tendency to explore new technologies and tools on his own, and that curiosity often inspires the rest of the team to grow alongside him.",
+      "Mahdi brings a lot of positive energy to the team — he's always cheerful, fun to work with, and has a great sense of humor that makes even stressful days easier to handle.",
+    ],
+  },
+  {
+    author: 'Javad Vahedi',
+    role: 'Front end developer at Taline',
+    date: 'JUL 9, 2025',
+    context: 'WORKED WITH MAHDI ON THE SAME TEAM',
+    quote: [
+      'After three years of working with Mahdi, I found Mahdi a man of focus. Someone who tries to be better day by day. It could be an amazing opportunity for any team to keep Mahdi beside themselves.',
+    ],
   },
 ] as const
 
