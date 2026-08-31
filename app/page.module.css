@@ -92,9 +92,42 @@
 }
 
 .resumeSection {
+  animation: sectionReveal 600ms ease both;
   border-top: 1px solid var(--border);
   margin: 2rem 0 0;
   padding-top: 1.5rem;
+}
+
+.resumeSection:nth-of-type(1) {
+  animation-delay: 100ms;
+}
+
+.resumeSection:nth-of-type(2) {
+  animation-delay: 180ms;
+}
+
+.resumeSection:nth-of-type(3) {
+  animation-delay: 260ms;
+}
+
+.resumeSection:nth-of-type(4) {
+  animation-delay: 340ms;
+}
+
+.resumeSection:nth-of-type(5) {
+  animation-delay: 420ms;
+}
+
+.resumeSection:nth-of-type(6) {
+  animation-delay: 500ms;
+}
+
+.summary {
+  animation: contentReveal 500ms ease both;
+}
+
+.summary + .summary {
+  animation-delay: 120ms;
 }
 
 .sectionTitle {
@@ -173,8 +206,17 @@
 }
 
 .experienceItem {
+  animation: contentReveal 500ms ease both;
   border-left: 1px solid var(--border-strong);
   padding-left: 1rem;
+}
+
+.experienceItem:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.experienceItem:nth-child(3) {
+  animation-delay: 200ms;
 }
 
 .experienceHeader {
@@ -236,9 +278,46 @@
 }
 
 .skillGroup {
+  animation: contentReveal 500ms ease both;
   border: 1px solid var(--border);
   border-radius: 0.35rem;
   padding: 0.9rem 1rem;
+}
+
+.skillGroup:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.skillGroup:nth-child(3) {
+  animation-delay: 160ms;
+}
+
+.skillGroup:nth-child(4) {
+  animation-delay: 240ms;
+}
+
+.skillGroup:nth-child(5) {
+  animation-delay: 320ms;
+}
+
+.skillGroup:nth-child(6) {
+  animation-delay: 400ms;
+}
+
+.skillGroup:nth-child(7) {
+  animation-delay: 480ms;
+}
+
+.skillGroup:nth-child(8) {
+  animation-delay: 560ms;
+}
+
+.skillGroup:nth-child(9) {
+  animation-delay: 640ms;
+}
+
+.skillGroup:nth-child(10) {
+  animation-delay: 720ms;
 }
 
 .skillGroup h3 {
@@ -278,12 +357,37 @@
 }
 
 .educationItem {
+  animation: contentReveal 500ms ease both;
   border-left: 1px solid var(--border-strong);
   padding-left: 1rem;
 }
 
 .educationItem span {
   display: block;
+}
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contentReveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cursor {
@@ -349,7 +453,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cursor,
-  .loadingMessage {
+  .loadingMessage,
+  .resumeSection,
+  .summary,
+  .experienceItem,
+  .skillGroup,
+  .educationItem {
     animation: none;
   }
 }

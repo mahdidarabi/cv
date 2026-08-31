@@ -122,7 +122,6 @@ export default function TerminalResume() {
     getFullVisibility,
   )
   const [status, setStatus] = useState<AnimationStatus>('static')
-  const [reducedMotion, setReducedMotion] = useState(false)
   const [activeLineId, setActiveLineId] = useState<string | null>(null)
   const [currentDate, setCurrentDate] = useState<Date | null>(null)
   const timersRef = useRef<number[]>([])
@@ -142,12 +141,7 @@ export default function TerminalResume() {
   }, [stopAnimation])
 
   useEffect(() => {
-    const motionPreference = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    )
-
-    if (motionPreference.matches || skipRequestedRef.current) {
-      setReducedMotion(motionPreference.matches)
+    if (skipRequestedRef.current) {
       setActiveLineId(null)
       setStatus('complete')
       return
@@ -211,20 +205,6 @@ export default function TerminalResume() {
     return () => window.clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    if (status !== 'loading' && status !== 'typing') return
-
-    const frame = window.requestAnimationFrame(() => {
-      const terminalContent = document.querySelector('.terminal-content')
-      terminalContent?.scrollTo({
-        top: terminalContent.scrollHeight,
-        behavior: 'auto',
-      })
-    })
-
-    return () => window.cancelAnimationFrame(frame)
-  }, [status, visibleChars])
-
   const isTyping = status === 'typing'
 
   return (
@@ -235,9 +215,9 @@ export default function TerminalResume() {
           className={styles.skipButton}
           type="button"
           onClick={skipAnimation}
-          disabled={status === 'complete' || reducedMotion}
+          disabled={status === 'complete'}
         >
-          {reducedMotion ? 'STATIC MODE' : 'SKIP ANIMATION'}
+          {status === 'complete' ? 'ANIMATION COMPLETE' : 'SKIP ANIMATION'}
         </button>
       </div>
 
