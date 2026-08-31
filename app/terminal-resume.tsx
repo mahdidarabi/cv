@@ -982,26 +982,36 @@ export default function TerminalResume() {
         })}
       </div>
 
-      <footer className={styles.dock} aria-label="Application dock">
-        <span className={styles.dockBrand}>⌘</span>
-        {windows.map((windowState) => {
-          const label = navigationItems.find((item) => item.id === windowState.id)?.label
+      <div className={styles.dockArea}>
+        <span
+          className={styles.dockBrand}
+          role="img"
+          aria-label="MD7"
+        />
+        {windows.length > 0 && (
+          <footer className={styles.dock} aria-label="Application dock">
+            {windows.map((windowState) => {
+              const label = navigationItems.find(
+                (item) => item.id === windowState.id,
+              )?.label
 
-          return (
-            <button
-              className={`${styles.dockApp} ${
-                !windowState.minimized ? styles.dockAppActive : ''
-              }`}
-              type="button"
-              key={windowState.id}
-              onClick={() => openApplication(windowState.id)}
-              aria-label={`Open ${label}`}
-            >
-              {label}
-            </button>
-          )
-        })}
-      </footer>
+              return (
+                <button
+                  className={`${styles.dockApp} ${
+                    !windowState.minimized ? styles.dockAppActive : ''
+                  }`}
+                  type="button"
+                  key={windowState.id}
+                  onClick={() => openApplication(windowState.id)}
+                  aria-label={`Open ${label}`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </footer>
+        )}
+      </div>
     </div>
   )
 }

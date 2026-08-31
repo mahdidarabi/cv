@@ -545,22 +545,28 @@
   display: block;
 }
 
-.dock {
+.dockArea {
   align-items: center;
-  background: rgba(18, 21, 28, 0.88);
-  border: 1px solid var(--border-strong);
-  border-radius: 0.65rem;
   bottom: 0.85rem;
   display: flex;
-  gap: 0.45rem;
+  gap: 0.55rem;
   left: 50%;
   max-width: calc(100vw - 2rem);
-  min-height: 2.75rem;
-  overflow-x: auto;
-  padding: 0.35rem;
   position: absolute;
   transform: translateX(-50%);
   z-index: 30;
+}
+
+.dock {
+  background: rgba(18, 21, 28, 0.88);
+  border: 1px solid var(--border-strong);
+  border-radius: 0.65rem;
+  display: flex;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  overflow-x: auto;
+  padding: 0.35rem;
+  max-width: 100%;
 }
 
 .dockBrand,
@@ -572,9 +578,13 @@
 }
 
 .dockBrand {
-  color: var(--accent);
-  font-size: 1.2rem;
-  padding: 0 0.5rem;
+  background: #241207 url("/icon.svg") center / cover no-repeat;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.35rem;
+  display: block;
+  height: 2rem;
+  padding: 0;
+  width: 2rem;
 }
 
 .dockApp {
