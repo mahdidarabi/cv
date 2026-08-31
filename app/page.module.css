@@ -61,7 +61,7 @@
 
 .menuButton,
 .closeButton {
-  background: rgba(255, 157, 26, 0.04);
+  background: rgba(212, 176, 106, 0.04);
   border: 1px solid var(--border);
   border-radius: 0.25rem;
   color: var(--text);
@@ -83,7 +83,7 @@
 .menuButton.selected,
 .closeButton:hover,
 .closeButton:focus-visible {
-  background: rgba(255, 157, 26, 0.14);
+  background: rgba(212, 176, 106, 0.14);
   border-color: var(--accent);
   color: var(--accent-bright);
   outline: none;
@@ -191,7 +191,7 @@
 
 .projectCard:hover,
 .projectCard:focus-visible {
-  background: rgba(255, 157, 26, 0.1);
+  background: rgba(212, 176, 106, 0.1);
   border-color: var(--accent);
   outline: none;
   transform: translateY(-2px);

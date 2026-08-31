@@ -1,12 +1,13 @@
 :root {
-  --background: #071426;
-  --surface: rgba(7, 20, 38, 0.88);
-  --accent: #ff9d1a;
-  --accent-bright: #ffc875;
-  --text: #f1f6ff;
-  --muted: #9db8d6;
-  --border: rgba(70, 143, 210, 0.28);
-  --border-strong: rgba(255, 157, 26, 0.55);
+  --background: #08090c;
+  --background-alt: #0c0e13;
+  --surface: rgba(18, 21, 28, 0.94);
+  --accent: #d4b06a;
+  --accent-bright: #f0d9a0;
+  --text: #ece6d8;
+  --muted: #9c9688;
+  --border: rgba(212, 176, 106, 0.16);
+  --border-strong: rgba(212, 176, 106, 0.38);
   --font-mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Monaco,
     Consolas, "Liberation Mono", "Courier New", monospace;
 }
@@ -20,7 +21,9 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, #071426 0%, #0a2140 50%, #10456c 100%);
+  background:
+    radial-gradient(circle at 80% 10%, rgba(212, 176, 106, 0.06), transparent 32rem),
+    var(--background);
   color: var(--text);
   font-family: var(--font-mono);
   margin: 0;
@@ -39,9 +42,8 @@ body::before {
   width: 100%;
   height: 100%;
   background-image:
-    radial-gradient(circle at 20% 50%, rgba(42, 145, 224, 0.16) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255, 157, 26, 0.06) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(42, 145, 224, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(212, 176, 106, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(138, 164, 255, 0.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -72,7 +74,7 @@ body::before {
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
     0 0 0 1px var(--border) inset,
-    0 0 60px rgba(24, 119, 194, 0.24);
+    0 0 60px rgba(212, 176, 106, 0.08);
   overflow: hidden;
   position: relative;
   display: flex;
@@ -81,7 +83,7 @@ body::before {
 
 /* Terminal Header */
 .terminal-header {
-  background: rgba(10, 37, 67, 0.78);
+  background: rgba(212, 176, 106, 0.06);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
@@ -145,17 +147,17 @@ body::before {
 }
 
 .terminal-content::-webkit-scrollbar-track {
-  background: rgba(143, 162, 184, 0.08);
+  background: rgba(212, 176, 106, 0.06);
   border-radius: 4px;
 }
 
 .terminal-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 157, 26, 0.45);
+  background: rgba(212, 176, 106, 0.45);
   border-radius: 4px;
 }
 
 .terminal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 157, 26, 0.6);
+  background: rgba(212, 176, 106, 0.6);
 }
 
 .skip-link {
