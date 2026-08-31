@@ -578,7 +578,7 @@
 }
 
 .dockBrand {
-  background: #241207 url("/icon.svg") center / cover no-repeat;
+  background: #0b1626 url("/icon.svg") center / cover no-repeat;
   border: 1px solid var(--border-strong);
   border-radius: 0.35rem;
   display: block;
