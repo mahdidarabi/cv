@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
-const isGitHubPagesBuild = process.env.GITHUB_ACTIONS === "true";
+const isStaticExport = process.env.NEXT_OUTPUT === "export";
 
 const nextConfig = {
-  output: isGitHubPagesBuild ? "export" : "standalone",
+  output: isStaticExport ? "export" : "standalone",
   trailingSlash: true,
 };
 

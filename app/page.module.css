@@ -1,117 +1,188 @@
-.container {
-  padding: 0;
+.resume {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  line-height: 1.65;
 }
 
-.loadingH1 {
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+.toolbar {
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
 }
 
-.imgContainer {
-  margin-top: 20px;
+.toolbarLabel {
+  color: var(--muted);
+  font-size: 0.75em;
+  letter-spacing: 0.12em;
 }
 
-.identityResults {
-  margin-top: 20px;
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+.skipButton {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.25rem;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7em;
+  padding: 0.35rem 0.6rem;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.skipButton:hover:not(:disabled),
+.skipButton:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  outline: none;
+}
+
+.skipButton:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.loadingMessage,
+.greeting,
+.message {
+  color: var(--muted);
+  font-size: 0.85em;
+  margin: 0;
+}
+
+.loadingMessage {
+  animation: pulse 1.2s ease-in-out infinite;
+  margin-bottom: 1.5rem;
 }
 
 .greeting {
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+  color: var(--accent-bright);
+  font-weight: 700;
 }
 
 .message {
-  margin-top: 20px;
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+  margin-top: 0.25rem;
 }
 
-.loadingMessage2 {
-  margin-top: 20px;
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+.identity {
+  border-left: 2px solid var(--accent);
+  margin: 2rem 0;
+  padding-left: 1rem;
 }
 
-.resume {
-  margin-top: 20px;
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+.name {
+  color: var(--text);
+  font-size: 1.25em;
+  line-height: 1.35;
+  margin: 0;
 }
 
-.name,
-.alias,
-.occupation,
-.devops,
-.devops1,
-.devops2,
-.devops3,
-.back,
-.back1,
-.back2,
-.back3,
-.back4 {
-  font-family: "Share Tech";
-  font-weight: 900;
-  font-size: 24px;
-  color: #01ab2d;
-  animation: pulse 0.9s infinite;
+.identityLine {
+  color: var(--muted);
+  font-size: 0.9em;
+  margin: 0.25rem 0 0;
 }
 
-.cursor:after {
-  content: "_";
-  opacity: 0;
-  animation: cursor 1s infinite;
+.sections {
+  display: grid;
+  gap: 2rem;
 }
 
-.sign:before {
-  content: "> ";
+.resumeSection {
+  margin: 0;
+}
+
+.sectionTitle {
+  align-items: center;
+  color: var(--accent-bright);
+  display: flex;
+  font-size: 1em;
+  gap: 0.6rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.5rem;
+}
+
+.sectionMarker {
+  color: var(--accent);
+  font-size: 0.85em;
+}
+
+.skillList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+}
+
+.skillItem {
+  color: var(--text);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+  position: relative;
+}
+
+.skillItem::before {
+  color: var(--muted);
+  content: "—";
+  left: -1.5rem;
+  position: absolute;
+}
+
+.cursor {
+  animation: cursor 850ms steps(1, end) infinite;
+  color: var(--accent-bright);
+}
+
+.screenReaderStatus {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
 }
 
 @keyframes cursor {
-  0% {
+  0%,
+  45% {
     opacity: 0;
   }
-  40% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
+
+  46%,
   100% {
-    opacity: 0;
+    opacity: 1;
   }
 }
 
-.subItem {
-  margin-top: 20px;
-  margin-left: 40px;
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
 
-.inline {
-  display: inline;
-  margin-left: 10px;
+@media (max-width: 600px) {
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .identity {
+    margin: 1.5rem 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor,
+  .loadingMessage {
+    animation: none;
+  }
 }
 
