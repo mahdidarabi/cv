@@ -16,6 +16,7 @@ import {
   hardSkillGroups,
   navigationItems,
   profile,
+  projects,
   softSkills,
   workExperience,
 } from './resume-data'
@@ -253,8 +254,9 @@ export default function TerminalResume() {
       )
       const focusedIndex = currentIndex >= 0 ? currentIndex : 0
 
-      if (/^[1-6]$/.test(event.key)) {
+      if (/^\d$/.test(event.key)) {
         const selectedIndex = Number(event.key) - 1
+        if (selectedIndex < 0 || selectedIndex >= navigationItems.length) return
         setSelectedView(navigationItems[selectedIndex].id)
         buttonRefs.current[selectedIndex]?.focus()
         return
@@ -397,6 +399,30 @@ export default function TerminalResume() {
             </div>
           </section>
         )
+      case 'projects':
+        return (
+          <section className={styles.viewSection} aria-labelledby="view-heading">
+            <SectionTitle id="view-heading">PROJECTS</SectionTitle>
+            <div className={styles.projectList}>
+              {projects.map((project) => (
+                <a
+                  className={styles.projectCard}
+                  href={project.url}
+                  key={project.url}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <div className={styles.projectHeader}>
+                    <h3>{project.name}</h3>
+                    <span>GITHUB ↗</span>
+                  </div>
+                  <p>{project.description}</p>
+                  <code>{project.url.replace('https://', '')}</code>
+                </a>
+              ))}
+            </div>
+          </section>
+        )
       case 'hard-skills':
         return (
           <section className={styles.viewSection} aria-labelledby="view-heading">
@@ -500,8 +526,8 @@ export default function TerminalResume() {
           ))}
         </div>
         <p className={styles.keyboardHint}>
-          <kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>ENTER</kbd> select ·{' '}
-          <kbd>ESC</kbd> close
+          <kbd>1–7</kbd> open · <kbd>↑</kbd> <kbd>↓</kbd> navigate ·{' '}
+          <kbd>ENTER</kbd> select · <kbd>ESC</kbd> close
         </p>
       </nav>
 

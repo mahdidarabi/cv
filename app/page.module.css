@@ -170,6 +170,66 @@
   max-width: 78ch;
 }
 
+.projectList {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.projectCard {
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  color: var(--text);
+  display: block;
+  padding: 1rem;
+  text-decoration: none;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.projectCard:hover,
+.projectCard:focus-visible {
+  background: rgba(255, 157, 26, 0.1);
+  border-color: var(--accent);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.projectHeader {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.projectHeader h3 {
+  color: var(--accent-bright);
+  font-size: 0.95em;
+  margin: 0;
+}
+
+.projectHeader span {
+  color: var(--accent);
+  font-size: 0.65em;
+  letter-spacing: 0.08em;
+}
+
+.projectCard p {
+  color: var(--muted);
+  font-size: 0.78em;
+  line-height: 1.6;
+  margin: 0.75rem 0;
+}
+
+.projectCard code {
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.68em;
+  overflow-wrap: anywhere;
+}
+
 .contactGrid {
   display: grid;
   gap: 0.75rem 2rem;
@@ -386,6 +446,7 @@
 @media (max-width: 600px) {
   .menuGrid,
   .contactGrid,
+  .projectList,
   .skillGroups,
   .softSkillList {
     grid-template-columns: 1fr;

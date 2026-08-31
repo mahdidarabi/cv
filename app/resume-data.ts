@@ -14,9 +14,34 @@ export const navigationItems = [
   { id: 'about', label: 'ABOUT' },
   { id: 'contact', label: 'CONTACT & DETAILS' },
   { id: 'experience', label: 'WORK EXPERIENCE' },
+  { id: 'projects', label: 'PROJECTS' },
   { id: 'hard-skills', label: 'HARD SKILLS' },
   { id: 'soft-skills', label: 'SOFT SKILLS' },
   { id: 'education', label: 'EDUCATION' },
+] as const
+
+export const projects = [
+  {
+    name: 'KArkive',
+    description: 'Kubernetes-native backup & restore operator.',
+    url: 'https://github.com/mahdidarabi/karkive',
+  },
+  {
+    name: 'DNSGo',
+    description: 'CLI for changing, showing, and removing DNS records.',
+    url: 'https://github.com/code2z/dnsgo',
+  },
+  {
+    name: 'Healthchecks.io Wrapper',
+    description:
+      'Helper scripts for running jobs and pinging Healthchecks to track success and failure.',
+    url: 'https://github.com/mahdidarabi/healthchecks.io-wrapper',
+  },
+  {
+    name: 'GitLeap',
+    description: 'GitHub repository.',
+    url: 'https://github.com/mahdidarabi/gitleap',
+  },
 ] as const
 
 export const contactDetails = [
