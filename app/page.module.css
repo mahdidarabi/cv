@@ -255,6 +255,17 @@
   margin: 0;
 }
 
+.recommenderLink {
+  color: inherit;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 0.2em;
+}
+
+.recommenderLink:hover,
+.recommenderLink:focus-visible {
+  color: var(--accent);
+}
+
 .recommendationHeader p,
 .recommendationHeader time {
   color: var(--muted);

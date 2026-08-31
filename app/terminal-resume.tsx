@@ -465,7 +465,16 @@ export default function TerminalResume() {
                 >
                   <header className={styles.recommendationHeader}>
                     <div>
-                      <h3>{recommendation.author}</h3>
+                      <h3>
+                        <a
+                          className={styles.recommenderLink}
+                          href={recommendation.url}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {recommendation.author}
+                        </a>
+                      </h3>
                       <p>{recommendation.role}</p>
                     </div>
                     <time>{recommendation.date}</time>

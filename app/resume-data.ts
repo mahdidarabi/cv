@@ -48,6 +48,7 @@ export const projects = [
 export const recommendations = [
   {
     author: 'Hasan Ahmadkhani',
+    url: 'https://www.linkedin.com/in/hahmadkhani/',
     role: 'Solution Architect & Data Engineer',
     date: 'FEB 9, 2026',
     context: 'WORKED WITH MAHDI ON THE SAME TEAM',
@@ -58,6 +59,7 @@ export const recommendations = [
   },
   {
     author: 'Ali Khodaverd',
+    url: 'https://www.linkedin.com/in/a-khodaverdi/',
     role: 'DevOps Engineer',
     date: 'JUL 15, 2025',
     context: 'WORKED WITH MAHDI ON THE SAME TEAM',
@@ -68,6 +70,7 @@ export const recommendations = [
   },
   {
     author: 'Parsa Yahooie',
+    url: 'https://www.linkedin.com/in/parsa-yahooie-b00094a2/',
     role: 'Game Enthusiast',
     date: 'JUL 10, 2025',
     context: 'WORKED WITH MAHDI ON DIFFERENT TEAMS',
@@ -78,6 +81,7 @@ export const recommendations = [
   },
   {
     author: 'milad golgolgla',
+    url: 'https://www.linkedin.com/in/milad-golgolnia-661a69188/',
     role: 'Node.js Developer',
     date: 'JUL 9, 2025',
     context: 'WORKED WITH MAHDI ON THE SAME TEAM',
@@ -88,6 +92,7 @@ export const recommendations = [
   },
   {
     author: 'Javad Vahedi',
+    url: 'https://www.linkedin.com/in/javad-vahedi/',
     role: 'Front end developer at Taline',
     date: 'JUL 9, 2025',
     context: 'WORKED WITH MAHDI ON THE SAME TEAM',
