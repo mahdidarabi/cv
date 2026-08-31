@@ -24,6 +24,40 @@ function getFullVisibility() {
   )
 }
 
+function formatDuration(startDate: string, currentDate: Date) {
+  const start = new Date(`${startDate}T00:00:00`)
+  const months =
+    (currentDate.getFullYear() - start.getFullYear()) * 12 +
+    currentDate.getMonth() -
+    start.getMonth() +
+    1
+  const years = Math.floor(months / 12)
+  const remainingMonths = months % 12
+  const parts = []
+
+  if (years > 0) {
+    parts.push(`${years} ${years === 1 ? 'YR' : 'YRS'}`)
+  }
+  if (remainingMonths > 0 || parts.length === 0) {
+    parts.push(`${remainingMonths} MOS`)
+  }
+
+  return parts.join(' ')
+}
+
+function getExperienceDuration(
+  experience: (typeof workExperience)[number],
+  currentDate: Date | null,
+) {
+  if ('startDate' in experience && currentDate) {
+    return formatDuration(experience.startDate, currentDate)
+  }
+  if ('duration' in experience && typeof experience.duration === 'string') {
+    return experience.duration
+  }
+  return undefined
+}
+
 function AnimatedText({
   id,
   text,
@@ -90,6 +124,7 @@ export default function TerminalResume() {
   const [status, setStatus] = useState<AnimationStatus>('static')
   const [reducedMotion, setReducedMotion] = useState(false)
   const [activeLineId, setActiveLineId] = useState<string | null>(null)
+  const [currentDate, setCurrentDate] = useState<Date | null>(null)
   const timersRef = useRef<number[]>([])
   const skipRequestedRef = useRef(false)
 
@@ -167,6 +202,14 @@ export default function TerminalResume() {
       stopAnimation()
     }
   }, [stopAnimation])
+
+  useEffect(() => {
+    const updateCurrentDate = () => setCurrentDate(new Date())
+    updateCurrentDate()
+    const interval = window.setInterval(updateCurrentDate, 60 * 60 * 1000)
+
+    return () => window.clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     if (status !== 'loading' && status !== 'typing') return
@@ -322,9 +365,7 @@ export default function TerminalResume() {
                   </div>
                   <ExperienceMeta
                     period={experience.period}
-                    duration={
-                      'duration' in experience ? experience.duration : undefined
-                    }
+                    duration={getExperienceDuration(experience, currentDate)}
                     employmentType={
                       'employmentType' in experience
                         ? experience.employmentType
