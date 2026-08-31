@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import styles from './page.module.css'
-import { animationLines, profile, resumeSections } from './resume-data'
+import {
+  animationLines,
+  contactDetails,
+  education,
+  hardSkillGroups,
+  profile,
+  softSkills,
+  workExperience,
+} from './resume-data'
 
 const START_DELAY = 350
 const TYPING_SPEED = 28
@@ -42,6 +50,17 @@ function AnimatedText({
   )
 }
 
+function SectionTitle({ children, id }: { children: React.ReactNode; id: string }) {
+  return (
+    <h2 id={id} className={styles.sectionTitle}>
+      <span className={styles.sectionMarker} aria-hidden="true">
+        ▸
+      </span>
+      {children}
+    </h2>
+  )
+}
+
 export default function TerminalResume() {
   const [visibleChars, setVisibleChars] = useState<Record<string, number>>(
     getFullVisibility,
@@ -50,6 +69,7 @@ export default function TerminalResume() {
   const [reducedMotion, setReducedMotion] = useState(false)
   const [activeLineId, setActiveLineId] = useState<string | null>(null)
   const timersRef = useRef<number[]>([])
+  const skipRequestedRef = useRef(false)
 
   const stopAnimation = useCallback(() => {
     timersRef.current.forEach((timer) => window.clearTimeout(timer))
@@ -57,6 +77,7 @@ export default function TerminalResume() {
   }, [])
 
   const skipAnimation = useCallback(() => {
+    skipRequestedRef.current = true
     stopAnimation()
     setVisibleChars(getFullVisibility())
     setActiveLineId(null)
@@ -68,8 +89,8 @@ export default function TerminalResume() {
       '(prefers-reduced-motion: reduce)',
     )
 
-    if (motionPreference.matches) {
-      setReducedMotion(true)
+    if (motionPreference.matches || skipRequestedRef.current) {
+      setReducedMotion(motionPreference.matches)
       setActiveLineId(null)
       setStatus('complete')
       return
@@ -206,44 +227,92 @@ export default function TerminalResume() {
           </p>
         </div>
 
-        <div className={styles.sections}>
-          {resumeSections.map((section) => (
-            <section
-              className={styles.resumeSection}
-              key={section.id}
-              aria-labelledby={`${section.id}-heading`}
-            >
-              <h2 id={`${section.id}-heading`} className={styles.sectionTitle}>
-                <span className={styles.sectionMarker} aria-hidden="true">
-                  ▸
-                </span>
-                <AnimatedText
-                  id={`${section.id}-heading`}
-                  text={section.label}
-                  visibleChars={visibleChars}
-                  isActive={
-                    isTyping && activeLineId === `${section.id}-heading`
-                  }
-                />
-              </h2>
-              <ul className={styles.skillList}>
-                {section.items.map((item, index) => (
-                  <li className={styles.skillItem} key={item}>
-                    <AnimatedText
-                      id={`${section.id}-item-${index}`}
-                      text={item}
-                      visibleChars={visibleChars}
-                      isActive={
-                        isTyping &&
-                        activeLineId === `${section.id}-item-${index}`
-                      }
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+        <section className={styles.resumeSection} aria-labelledby="about-heading">
+          <SectionTitle id="about-heading">ABOUT</SectionTitle>
+          <p className={styles.summary}>{profile.summary}</p>
+          <p className={styles.summary}>{profile.background}</p>
+        </section>
+
+        <section className={styles.resumeSection} aria-labelledby="contact-heading">
+          <SectionTitle id="contact-heading">CONTACT &amp; DETAILS</SectionTitle>
+          <dl className={styles.contactGrid}>
+            {contactDetails.map((detail) => (
+              <div className={styles.contactItem} key={detail.label}>
+                <dt>{detail.label}</dt>
+                <dd>
+                  {'href' in detail ? (
+                    <a href={detail.href}>{detail.value}</a>
+                  ) : (
+                    detail.value
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section
+          className={styles.resumeSection}
+          aria-labelledby="experience-heading"
+        >
+          <SectionTitle id="experience-heading">WORK EXPERIENCE</SectionTitle>
+          <div className={styles.experienceList}>
+            {workExperience.map((job) => (
+              <article className={styles.experienceItem} key={`${job.company}-${job.role}`}>
+                <div className={styles.experienceHeader}>
+                  <h3>{job.role}</h3>
+                  <p>{job.period}</p>
+                </div>
+                <p className={styles.company}>{job.company}</p>
+                {job.responsibilities.length > 0 && (
+                  <ul className={styles.responsibilityList}>
+                    {job.responsibilities.map((responsibility) => (
+                      <li key={responsibility}>{responsibility}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.resumeSection} aria-labelledby="skills-heading">
+          <SectionTitle id="skills-heading">HARD SKILLS</SectionTitle>
+          <div className={styles.skillGroups}>
+            {hardSkillGroups.map((group) => (
+              <div className={styles.skillGroup} key={group.id}>
+                <h3>{group.label}</h3>
+                <ul className={styles.skillList}>
+                  {group.items.map((skill) => (
+                    <li className={styles.skillItem} key={skill}>
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.resumeSection} aria-labelledby="soft-skills-heading">
+          <SectionTitle id="soft-skills-heading">SOFT SKILLS</SectionTitle>
+          <ul className={styles.softSkillList}>
+            {softSkills.map((skill) => (
+              <li className={styles.skillItem} key={skill}>
+                {skill}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className={styles.resumeSection} aria-labelledby="education-heading">
+          <SectionTitle id="education-heading">EDUCATION</SectionTitle>
+          <div className={styles.educationItem}>
+            <h3>{education.degree}</h3>
+            <p>{education.institution}</p>
+            <span>{education.period}</span>
+          </div>
+        </section>
       </div>
 
       <p className={styles.screenReaderStatus} aria-live="polite">

@@ -6,7 +6,8 @@ const siteUrl = new URL('https://md7.ir')
 export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: 'Mahdi Darabi | CV',
-  description: 'DevOps Engineer / SRE | Backend Developer',
+  description:
+    'DevOps Engineer with 3+ years of experience in scalable infrastructure and CI/CD.',
   keywords: [
     'Mahdi Darabi',
     'DevOps Engineer',
@@ -25,13 +26,15 @@ export const metadata: Metadata = {
     type: 'website',
     url: siteUrl,
     title: 'Mahdi Darabi | CV',
-    description: 'DevOps Engineer / SRE | Backend Developer',
+    description:
+      'DevOps Engineer with 3+ years of experience in scalable infrastructure and CI/CD.',
     siteName: 'Mahdi Darabi | CV',
   },
   twitter: {
     card: 'summary',
     title: 'Mahdi Darabi | CV',
-    description: 'DevOps Engineer / SRE | Backend Developer',
+    description:
+      'DevOps Engineer with 3+ years of experience in scalable infrastructure and CI/CD.',
   },
   robots: {
     index: true,

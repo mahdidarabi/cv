@@ -84,15 +84,17 @@
   color: var(--muted);
   font-size: 0.9em;
   margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
 }
 
-.sections {
-  display: grid;
-  gap: 2rem;
+.output {
+  overflow-wrap: anywhere;
 }
 
 .resumeSection {
-  margin: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0 0;
+  padding-top: 1.5rem;
 }
 
 .sectionTitle {
@@ -110,15 +112,131 @@
   font-size: 0.85em;
 }
 
+.summary {
+  color: var(--text);
+  font-size: 0.9em;
+  line-height: 1.75;
+  margin: 0.75rem 0 0;
+  max-width: 78ch;
+}
+
+.contactGrid {
+  display: grid;
+  gap: 0.75rem 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.contactItem {
+  min-width: 0;
+}
+
+.contactItem dt {
+  color: var(--muted);
+  font-size: 0.7em;
+  letter-spacing: 0.1em;
+}
+
+.contactItem dd {
+  color: var(--text);
+  font-size: 0.85em;
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.contactItem a {
+  color: inherit;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 0.2em;
+}
+
+.contactItem a:hover,
+.contactItem a:focus-visible {
+  color: var(--accent-bright);
+}
+
+.experienceList {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.experienceItem {
+  border-left: 1px solid var(--border-strong);
+  padding-left: 1rem;
+}
+
+.experienceHeader {
+  align-items: baseline;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.experienceHeader h3,
+.skillGroup h3,
+.educationItem h3 {
+  color: var(--text);
+  font-size: 0.9em;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.experienceHeader p,
+.company,
+.educationItem p,
+.educationItem span {
+  color: var(--muted);
+  font-size: 0.75em;
+  margin: 0.25rem 0 0;
+}
+
+.company {
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.responsibilityList {
+  color: var(--text);
+  display: grid;
+  font-size: 0.82em;
+  gap: 0.45rem;
+  line-height: 1.6;
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.responsibilityList li {
+  padding-left: 0.2rem;
+}
+
+.skillGroups {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.skillGroup {
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  padding: 0.9rem 1rem;
+}
+
+.skillGroup h3 {
+  color: var(--accent);
+  font-size: 0.72em;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
 .skillList {
   list-style: none;
   margin: 0;
-  padding: 0 0 0 1.5rem;
+  padding: 0.6rem 0 0 1.2rem;
 }
 
 .skillItem {
   color: var(--text);
-  font-size: 0.9em;
+  font-size: 0.78em;
   overflow-wrap: anywhere;
   position: relative;
 }
@@ -128,6 +246,24 @@
   content: "—";
   left: -1.5rem;
   position: absolute;
+}
+
+.softSkillList {
+  display: grid;
+  gap: 0.45rem 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1.2rem;
+}
+
+.educationItem {
+  border-left: 1px solid var(--border-strong);
+  padding-left: 1rem;
+}
+
+.educationItem span {
+  display: block;
 }
 
 .cursor {
@@ -176,6 +312,18 @@
 
   .identity {
     margin: 1.5rem 0;
+  }
+
+  .contactGrid,
+  .skillGroups,
+  .softSkillList {
+    grid-template-columns: 1fr;
+  }
+
+  .experienceHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.15rem;
   }
 }
 
