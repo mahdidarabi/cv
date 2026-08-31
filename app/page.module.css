@@ -108,14 +108,20 @@
 
 .desktopIconGlyph {
   align-items: center;
-  border: 1px solid var(--border-strong);
+  background: var(--accent);
+  border: 1px solid var(--accent-bright);
   border-radius: 0.45rem;
-  color: var(--accent);
+  color: #101115;
   display: flex;
-  font-size: 1.45rem;
   height: 2.9rem;
   justify-content: center;
   width: 2.9rem;
+}
+
+.desktopIconSvg {
+  fill: currentColor;
+  height: 1.65rem;
+  width: 1.65rem;
 }
 
 .desktopIdentity {

@@ -56,7 +56,28 @@ type IconPosition = {
   y: number
 }
 
-const appIcons = ['◉', '@', '▣', '⌘', '✦', '⚙', '◇', '▤']
+const appIconPaths = [
+  'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 8a8 8 0 0 1 16 0H4Z',
+  'M3 5h18v14H3V5Zm2 2v10h14V7H5Zm0 0 7 5 7-5H5Z',
+  'M7 7V5h10v2h4v13H3V7h4Zm2 0h6V6H9v1Z',
+  'M3 5h6l2 2h10v12H3V5Z',
+  'M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7l-5 3v-3H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
+  'm12 2 1.7 2.3 2.8-.4.8 2.7 2.7.8-1.4 2.4 1.4 2.4-2.7.8-.8 2.7-2.8-.4L12 16l-1.7-2.3-2.8.4-.8-2.7-2.7-.8 1.4-2.4-1.4-2.4 2.7-.8.8-2.7 2.8.4L12 2Zm0 5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z',
+  'M12 21s-8-4.7-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 3.5C20 16.3 12 21 12 21Z',
+  'M2 9 12 4l10 5-10 5L2 9Zm4 3.2V16c3 2.7 9 2.7 12 0v-3.8l-6 3-6-3Z',
+] as const
+
+function ApplicationIcon({ index }: { index: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={styles.desktopIconSvg}
+      viewBox="0 0 24 24"
+    >
+      <path d={appIconPaths[index]} />
+    </svg>
+  )
+}
 
 function isNavigationId(value: unknown): value is NavigationId {
   return navigationItems.some((item) => item.id === value)
@@ -876,7 +897,9 @@ export default function TerminalResume() {
             onPointerUp={stopDraggingIcon}
             onPointerCancel={stopDraggingIcon}
           >
-            <span className={styles.desktopIconGlyph}>{appIcons[index]}</span>
+            <span className={styles.desktopIconGlyph}>
+              <ApplicationIcon index={index} />
+            </span>
             <span>{item.label}</span>
           </button>
         ))}
