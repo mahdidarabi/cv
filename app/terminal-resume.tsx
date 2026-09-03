@@ -27,7 +27,7 @@ const TYPING_SPEED = 45
 const LINE_DELAY = 250
 const DESKTOP_STATE_KEY = 'mahdi-cv-desktop-state'
 
-type AnimationStatus = 'static' | 'typing' | 'complete'
+type AnimationStatus = 'typing' | 'complete'
 type NavigationId = (typeof navigationItems)[number]['id']
 
 type ExperienceRole = {
@@ -122,12 +122,6 @@ function getInitialWindowPosition(index: number) {
     x: 90 + index * 28,
     y: 82 + index * 28,
   }
-}
-
-function getFullVisibility() {
-  return Object.fromEntries(
-    animationLines.map((line) => [line.id, line.text.length]),
-  )
 }
 
 function formatDuration(startDate: string, currentDate: Date) {
@@ -268,9 +262,9 @@ function ExperienceRole({
 
 export default function TerminalResume() {
   const [visibleChars, setVisibleChars] = useState<Record<string, number>>(
-    getFullVisibility,
+    {},
   )
-  const [status, setStatus] = useState<AnimationStatus>('static')
+  const [status, setStatus] = useState<AnimationStatus>('typing')
   const [activeLineId, setActiveLineId] = useState<string | null>(null)
   const [currentDate, setCurrentDate] = useState<Date | null>(null)
   const [windows, setWindows] = useState<WindowState[]>([])
@@ -339,9 +333,6 @@ export default function TerminalResume() {
       schedule(revealNextCharacter, LINE_DELAY)
     }
 
-    setStatus('typing')
-    setVisibleChars({})
-    setActiveLineId(null)
     schedule(revealNextCharacter, START_DELAY)
 
     return () => {
@@ -359,6 +350,7 @@ export default function TerminalResume() {
   }, [])
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- hydrate client-only desktop state after mount */
     try {
       const savedState = window.localStorage.getItem(DESKTOP_STATE_KEY)
       if (!savedState) {
@@ -445,6 +437,7 @@ export default function TerminalResume() {
     } finally {
       setHasRestoredState(true)
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [])
 
   useEffect(() => {
