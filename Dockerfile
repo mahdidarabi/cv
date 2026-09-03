@@ -1,17 +1,17 @@
-FROM node:22-bookworm AS deps
+FROM node:24-bookworm AS deps
 WORKDIR /app
 
 COPY package.json yarn.lock* ./
 RUN yarn install --frozen-lockfile
 
-FROM node:22-bookworm AS builder
+FROM node:24-bookworm AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN yarn build
 
-FROM node:22-bookworm-slim AS runner
+FROM node:24-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
